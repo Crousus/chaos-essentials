@@ -1,0 +1,130 @@
+#ChaosEssentials Config
+#Database Information
+tableprefix: 'ce_'
+jdbc: 'jdbc:mysql://localhost/'
+database: 'chaosessentials'
+username: 'root'
+password: ''
+
+Inv_name: '&8» &6Verfügbare Befehle'
+
+Inv_size: 4
+
+targetWarp: 'lobby'
+
+#############################################
+###### Purchaseable Commands Messages #######
+#############################################
+
+nograntedpermission: '&8[&e&l!&8] &c&lServer &8» &cDer Spieler &e%target% &chat keinen
+  granted /%command% Befehl'
+
+commandnotavailable: '&8[&e&l!&8] &c&lServer &8» &cDer Befehl &e/%command% &cist nicht
+  verfügbar'
+
+buyconfirmation: '&8[&e&l!&8] &c&lServer &8» &aDu hast erfolgreich den Befehl &e/%command%
+  &afür &6%duration% Tage/Nutzungen &agekauft'
+
+notenoughmoney: '&8[&e&l!&8] &c&lServer &8» &cDu brauchst &e%price% &cfür diesen Befehl'
+
+nopermission: '&8[&e&l!&8] &c&lServer &8» &cDazu hast du keine Rechte'
+
+oncooldown: '&8[&e&l!&8] &c&lServer &8» &7Der Befehl &e/%command% &7 besitzt aktuell
+  noch einen Cooldown von &e%time%'
+
+oncooldown_self: '&8[&e&l!&8] &c&lServer &8» &7Der Spieler &e%target% &7hat auf diesen
+  Befehl noch einen Cooldown'
+
+giftconfirmation_self: '&8[&e&l!&8] &c&lServer &8» &7Du hast den Befehl &e/%command%
+  &7für den Spieler &6%target% &7erfolgreich gekauft'
+
+giftconfirmation_receiver: '&8[&e&l!&8] &c&lServer &8» &7Der Spieler &e%player% &7hat
+  dir den Befehl &e/%command% &7für &6%duration% &7Tage/Benutzungen &7gekauft'
+
+grantconfirmation_self: '&8[&e&l!&8] &c&lServer &8» &aDu hast &e%target% &aden Befehl
+  &e/%command% &afür &6%duration% &aTage/Nutzungen gegeben'
+
+grantconfirmation_receiver: '&8[&e&l!&8] &c&lServer &8» &e%player% &7hat dir den Befehl
+  &e/%command% &7für &6%duration% Tage/Nutzungen &7gegeben'
+
+ungrantconfirmation: '&8[&e&l!&8] &c&lServer &8» &cDu hast von &e%target% &cden Befehl
+  &e/%command% &cwieder entfernt'
+
+playernotfound: '&8[&e&l!&8] &c&lServer &8» &cDieser Spieler ist nicht online'
+
+TargetIsSender: '&8[&e&l!&8] &c&lServer &8» &cDu kannst diesen Befehl nicht bei dir
+  selbst ausführen'
+
+has_perm_already: '&8[&e&l!&8] &c&lServer &8» &cDu hast diesen Befehl bereits!'
+
+target_has_perm_already: '&8[&e&l!&8] &c&lServer &8» &cDieser Spieler hat diesen Befehl bereits!'
+
+last_use: '&8[&e&l!&8] &c&lServer &8» &cBefehl wurde aufgebraucht'
+
+is_purchaseable: '&8[&e&l!&8] &c&lServer &8» &cDu kannst dir diesen Befehl mit /buy kaufen!'
+
+
+usage:
+  gift: '&8[&e&l!&8] &c&lVerwendung &8» &c /gift [Spieler]!'
+  grant: '&8[&e&l!&8] &c&lVerwendung &8» &c /grant [Spieler]!'
+
+item:
+  name: '&8» &6%command%'
+  lore:
+    - '&7Stunden: &e%duration% Stunden'
+    - '&7Preis: &c%price% Lumen'
+    - '&7Server: &b%servers%'
+    - '&7Cooldown: &e%cooldown% Stunden'
+    - '%additional_lore%'           #Individual Lore per Item
+  lore_uses: '&7Verwendungen &e%duration% '
+  lore_days: '&7Tage: &e%duration%'
+
+timeformat:
+  days: ' Tag/e '
+  hours: ' Stunde/n '
+  minutes: ' Minute/n'
+
+#############################################
+##########     Bonus Commands    ############
+#############################################
+
+boatspawn: '&8[&e&l!&8] &c&lServer &8» &aBoot wurde erfolgreich gespawnt'
+
+sleeping: '&8[&e&l!&8] &c&lServer &8» &aDu schläfst nun für 15 Sekunden'
+
+sleeping_end: '&8[&e&l!&8] &c&lServer &8» &cDu schläfst nun nicht mehr'
+
+sleep_only_at_night: '&8[&e&l!&8] &c&lServer &8» &cDu kannst nur Nachts schlafen'
+
+launch: '&8[&e&l!&8] &c&lServer &8» &dWhoosh!'
+
+launch_cd: '&8[&e&l!&8] &c&lServer &8» &cBitte warte einen Moment, bevor du den Befehl erneut benutzt'
+
+average: '&8[&e&l!&8] &c&lServer &8» &7Der Preisdurchschnitt für &6%itemcount% %item% &7beträgt &e%avg% Lumen &7bei &e%count% &7Käufen gesamt'
+
+no_item: '&8[&e&l!&8] &c&lServer &8» &cHalte ein Item in der Hand oder benutze optionale Argumente wie /avg <item> <anzahl> <Item Name> <Tage>'
+
+hat_no_item: '&8[&e&l!&8] &c&lServer &8» &cBitte nimm ein Item in die Hand'
+
+hat: '&8[&e&l!&8] &c&lServer &8» &aViel Spaß mit deinem Hut'
+
+restart: '&8[&e&l!&8] &c&lServer &8» &aDu wurdest auf die Lobby wegen eines restarts teleportiert'
+
+#############################################
+##########    Random Teleport    ############
+#############################################
+
+rtp_sign:
+  - ''
+  - '&e&l[Klick]'
+  - '&b&lZufallsTP'
+  - ''
+
+sign_created: '&8[&e&l!&8] &c&lServer &8» &aDu hast das ZufallsTp Schild erfolgreich erstellt'
+
+teleported: '&8[&e&l!&8] &c&lServer &8» &aDu wurdest %distance% Blöcke weg teleportiert'
+
+tp_cooldown: '&8[&e&l!&8] &c&lServer &8» &aDu kannst den Zufalls Teleport erst in %time% Sekunden wieder benutzen'
+
+nodestination: '&8[&e&l!&8] &c&lServer &8» &cEs konnte kein sicherer Teleportplatz gefunden werden. Versuche es nochmal.'
+

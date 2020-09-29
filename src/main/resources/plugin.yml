@@ -1,0 +1,39 @@
+name: ChaosEssentials
+version: 2.0
+author: Crousus
+main: de.chaosolymp.chaosessentials.ChaosEssentials
+description: Essentials Plugin for ChaosOlymp
+website: https://chaosolymp.de
+prefix: ChaosEssentials
+api-version: 1.16
+softdepend: [AdvancedRegionMarket, LuckPerms, Vault, ChestShop, MaSuiteWarps]
+
+commands:
+  buy:
+    description: Du kannst damit ausgewaehlte Befehle kaufen
+    aliases: [perk, perks]
+    permission: ce.buy
+  gift:
+    description: Du kannst damit ausgewaehlte Befehle kaufen für andere kaufen
+    aliases: [giftperk]
+    permission: ce.gift
+  hat:
+    description: Verpass dir einen tollen Hut
+  rest:
+    description: Schlafe wo und wilst schnell durch
+    aliases: [sleep, schlafen]
+  launch:
+    description: Schieße dich in die Luft
+  boat:
+    description: Spawne ein Boot
+    aliases: [boot]
+  cstop:
+    description: Stoppt den Server und befoerdert den Spieler auf einen anderen Server
+    permission: ce.cstop
+  average:
+    description: Bekomme den Preisdurchschnitt eines Items
+    permission: ce.average
+    aliases: [durchschnitt, avg]
+  crea:
+    permission: ce.gamemode
+    description: Gibt Gamemode
