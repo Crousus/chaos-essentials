@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'de.chaosolymp'
-version '2.0-SNAPSHOT'
+version '2.1-SNAPSHOT'
 
 artifacts {
     archives shadowJar
