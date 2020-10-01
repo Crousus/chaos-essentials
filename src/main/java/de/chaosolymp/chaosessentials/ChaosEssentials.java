@@ -70,6 +70,7 @@ public class ChaosEssentials extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MultiToolListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinAndLeaveListener(), this);
         Bukkit.getPluginManager().registerEvents(new RandomTeleportListener(), this);
+        Bukkit.getPluginManager().registerEvents(new XpSpammerListener(), this);
 
     }
 
