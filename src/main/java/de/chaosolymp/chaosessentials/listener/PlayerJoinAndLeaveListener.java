@@ -24,7 +24,6 @@ public class PlayerJoinAndLeaveListener implements Listener {
 
         DatabaseController db = new DatabaseController();
         db.addPlayer(player.getUniqueId().toString());
-        player.setGameMode(GameMode.CREATIVE);
 
         if (player.hasPermission("ce.auto.creative")) {
             player.setGameMode(GameMode.CREATIVE);
