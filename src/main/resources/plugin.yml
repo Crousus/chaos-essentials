@@ -37,3 +37,6 @@ commands:
   crea:
     permission: ce.gamemode
     description: Gibt Gamemode
+  xpcloud:
+    permission: ce.xpcloud
+    description: Spawnt einen XP Brunnen

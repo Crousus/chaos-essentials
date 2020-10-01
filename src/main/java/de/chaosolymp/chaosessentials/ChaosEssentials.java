@@ -60,6 +60,7 @@ public class ChaosEssentials extends JavaPlugin {
         getCommand("boat").setExecutor(new BoatCommand());
         getCommand("average").setExecutor(new AverageCommand());
         getCommand("crea").setExecutor(new GamemodeCommand());
+        getCommand("xpcloud").setExecutor(new XpCloudCommand());
 
         if (Bukkit.getPluginManager().getPlugin("MaSuiteWarps") != null)
             getCommand("cstop").setExecutor(new CstopCommand());
