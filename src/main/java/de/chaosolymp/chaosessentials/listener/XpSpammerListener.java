@@ -19,20 +19,20 @@ public class XpSpammerListener implements Listener {
         if ((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && e.getPlayer().getInventory().getItemInMainHand().getType() != Material.AIR) {
             if (player.hasPermission("ce.xpsword")) {
                 if (player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Xp Sword")) {
-                    new BukkitRunnable(){
+                    new BukkitRunnable() {
                         private int count = 5;
+
                         @Override
                         public void run() {
-                            if(count > 0) {
+                            if (count > 0) {
                                 Entity bottle = player.getWorld().spawnEntity(player.getLocation().add(0, 1, 0), EntityType.THROWN_EXP_BOTTLE);
                                 bottle.setVelocity(player.getLocation().getDirection().multiply(1.5));
                                 count--;
-                            }
-                            else{
+                            } else {
                                 this.cancel();
                             }
                         }
-                    }.runTaskTimer(ChaosEssentials.getPlugin(),0,1);
+                    }.runTaskTimer(ChaosEssentials.getPlugin(), 0, 1);
                 }
             }
         }

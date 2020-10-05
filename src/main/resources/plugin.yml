@@ -1,12 +1,12 @@
 name: ChaosEssentials
-version: 2.1
+version: 2.2
 author: Crousus
 main: de.chaosolymp.chaosessentials.ChaosEssentials
 description: Essentials Plugin for ChaosOlymp
 website: https://chaosolymp.de
 prefix: ChaosEssentials
 api-version: 1.16
-softdepend: [AdvancedRegionMarket, LuckPerms, Vault, ChestShop, MaSuiteWarps]
+softdepend: [AdvancedRegionMarket, LuckPerms, Vault, ChestShop, MaSuiteWarps, WorldGuard, LWC]
 
 commands:
   buy:
@@ -33,10 +33,17 @@ commands:
   average:
     description: Bekomme den Preisdurchschnitt eines Items
     permission: ce.average
-    aliases: [durchschnitt, avg]
+    aliases: [durchschnitt, avg, worth]
   crea:
     permission: ce.gamemode
     description: Gibt Gamemode
   xpcloud:
     permission: ce.xpcloud
     description: Spawnt einen XP Brunnen
+  var:
+    permission: ce.variable
+    description: Einfaches ändern von Variablen auf Pipe Schildern
+    aliases: [variable]
+  pipe:
+    permission: ce.variable
+    description: Einfaches plazieren von Pipe Schildern

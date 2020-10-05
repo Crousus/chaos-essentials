@@ -3,6 +3,7 @@ package de.chaosolymp.chaosessentials;
 import de.chaosolymp.chaosessentials.command.*;
 import de.chaosolymp.chaosessentials.config.BuyConfig;
 import de.chaosolymp.chaosessentials.config.RandomTpConfig;
+import de.chaosolymp.chaosessentials.config.VariableConfig;
 import de.chaosolymp.chaosessentials.listener.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -24,6 +25,9 @@ public class ChaosEssentials extends JavaPlugin {
         RandomTpConfig.setup();
         RandomTpConfig.get().options().copyDefaults(true);
         RandomTpConfig.save();
+
+        VariableConfig.setup();
+        VariableConfig.save();
 
         this.saveDefaultConfig();
 
@@ -61,6 +65,11 @@ public class ChaosEssentials extends JavaPlugin {
         getCommand("average").setExecutor(new AverageCommand());
         getCommand("crea").setExecutor(new GamemodeCommand());
         getCommand("xpcloud").setExecutor(new XpCloudCommand());
+        getCommand("var").setExecutor(new VariableCommand());
+
+        PipeSignCommand pipe = new PipeSignCommand();
+
+        getCommand("pipe").setExecutor(pipe);
 
         if (Bukkit.getPluginManager().getPlugin("MaSuiteWarps") != null)
             getCommand("cstop").setExecutor(new CstopCommand());
@@ -72,6 +81,7 @@ public class ChaosEssentials extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerJoinAndLeaveListener(), this);
         Bukkit.getPluginManager().registerEvents(new RandomTeleportListener(), this);
         Bukkit.getPluginManager().registerEvents(new XpSpammerListener(), this);
+        Bukkit.getPluginManager().registerEvents(pipe, this);
 
     }
 

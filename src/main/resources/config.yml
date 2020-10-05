@@ -128,3 +128,25 @@ tp_cooldown: '&8[&e&l!&8] &c&lServer &8» &aDu kannst den Zufalls Teleport erst 
 
 nodestination: '&8[&e&l!&8] &c&lServer &8» &cEs konnte kein sicherer Teleportplatz gefunden werden. Versuche es nochmal.'
 
+#############################################
+###########    Pipe Variables    ############
+#############################################
+
+pipe_info: '&8[&e&l!&8] &6&lPipe &8» &aEs werden folgende Items gefiltert: &e%items%'
+
+no_region_member: '&8[&e&l!&8] &6&lPipe &8» &cDieses Schild gehört dir nicht'
+
+no_valid_item: '&8[&e&l!&8] &6&lPipe &8» &cAuswahl ist kein Item'
+
+no_pipe: '&8[&e&l!&8] &6&lPipe &8» &cDies ist kein [Pipe] Schild!'
+
+no_sign: '&8[&e&l!&8] &6&lPipe &8» &cDies ist kein [Pipe] Schild!'
+
+no_var_found: '&8[&e&l!&8] &6&lPipe &8» &cKeine Variable zu &e%item% &cgefunden!'
+
+pipe_enabled: '&8[&e&l!&8] &6&lPipe &8» &aDeine plazierten Schilder werden nun automatisch zu [Pipe] Schilder'
+
+pipe_disabled: '&8[&e&l!&8] &6&lPipe &8» &aDeine Schilder werden wieder normal plaziert!'
+
+no_sign_space: '&8[&e&l!&8] &6&lPipe &8» &cDiese Variable passt nicht mehr aufs Schild!'
+
