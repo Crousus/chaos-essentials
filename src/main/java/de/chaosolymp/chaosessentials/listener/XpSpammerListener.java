@@ -23,18 +23,18 @@ public class XpSpammerListener implements Listener {
                 if (display.equals("Xp Spammer") || display.equals("TnT Spammer")) {
                     new BukkitRunnable() {
                         private int count = 5;
+
                         @Override
                         public void run() {
                             if (count > 0) {
                                 Entity entity;
-                                if(display.equals("TnT Spammer")){
+                                if (display.equals("TnT Spammer")) {
                                     entity = player.getWorld().spawnEntity(player.getLocation().add(0, 1.1, 0), EntityType.PRIMED_TNT);
                                     TNTPrimed tnt = (TNTPrimed) entity;
                                     tnt.setYield(0);
                                     tnt.setIsIncendiary(false);
                                     tnt.setFuseTicks(80);
-                                }
-                                else{
+                                } else {
                                     entity = player.getWorld().spawnEntity(player.getLocation().add(0, 1.1, 0), EntityType.THROWN_EXP_BOTTLE);
                                 }
                                 entity.setVelocity(player.getLocation().getDirection().multiply(1.5));

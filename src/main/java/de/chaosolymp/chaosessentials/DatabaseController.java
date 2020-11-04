@@ -3,6 +3,7 @@ package de.chaosolymp.chaosessentials;
 import de.chaosolymp.chaosessentials.chestshoplog.AverageResponse;
 import de.chaosolymp.chaosessentials.chestshoplog.ChestShopPurchase;
 import de.chaosolymp.chaosessentials.perks.Purchase;
+import de.chaosolymp.chaosessentials.tokens.Token;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -42,15 +43,34 @@ public class DatabaseController {
         String playerTable = "CREATE TABLE IF NOT EXISTS " + prefix + "players ( `player_id` INT NOT NULL AUTO_INCREMENT , `uuid` VARCHAR(36) NOT NULL , `first_join` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
                 " `last_logout` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP," +
                 " PRIMARY KEY (`player_id`, `uuid`));";
+
+        String tokenTable = "CREATE TABLE IF NOT EXISTS " + prefix + "tokens ( `token_id` INT NOT NULL AUTO_INCREMENT , `token_uuid` VARCHAR(36) NOT NULL , `creator_id` INT(11) NOT NULL," +
+                " `command` VARCHAR(512)," +
+                " PRIMARY KEY (`token_id`, `token_uuid`), FOREIGN KEY (`creator_id`) REFERENCES " + prefix + "players (player_id));";
+
+        String devaluationsTable = "CREATE TABLE IF NOT EXISTS " + prefix + "devaluations ( `devaluation_id` INT NOT NULL AUTO_INCREMENT , `token_id` INT(11) NOT NULL , `user_id` INT(11) NOT NULL," +
+                " `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                " PRIMARY KEY (`devaluation_id`), FOREIGN KEY (`token_id`) REFERENCES " + prefix + "tokens (token_id), FOREIGN KEY (`user_id`) REFERENCES " + prefix + "players (player_id));";
+
+        String violationsTable = "CREATE TABLE IF NOT EXISTS " + prefix + "violations ( `violation_id` INT NOT NULL AUTO_INCREMENT , `player_id` INT(11) NOT NULL , `token_id` INT(11) NOT NULL," +
+                " `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                " PRIMARY KEY (`violation_id`), FOREIGN KEY (`token_id`) REFERENCES " + prefix + "tokens (token_id), FOREIGN KEY (`player_id`) REFERENCES " + prefix + "players (player_id));";
+
         Connection connection = DatabaseProvider.getConnection(plugin);
 
         try {
             PreparedStatement cShopStmt = connection.prepareStatement(chestShopTable);
             PreparedStatement buyStmt = connection.prepareStatement(buyTable);
             PreparedStatement playerStmt = connection.prepareStatement(playerTable);
+            PreparedStatement tokenStmt = connection.prepareStatement(tokenTable);
+            PreparedStatement devaluationsStmt = connection.prepareStatement(devaluationsTable);
+            PreparedStatement violationsStmt = connection.prepareStatement(violationsTable);
             playerStmt.executeUpdate();
             buyStmt.executeUpdate();
             cShopStmt.executeUpdate();
+            tokenStmt.executeUpdate();
+            devaluationsStmt.executeUpdate();
+            violationsStmt.executeUpdate();
             connection.close();
             addPlayer("c796b66c-a367-3137-a9dc-55f2befab2b9");
             return true;
@@ -210,6 +230,42 @@ public class DatabaseController {
 
         } catch (SQLException e) {
             System.out.println(e);
+        }
+    }
+
+    public void addToken(Token token) {
+        try {
+            String sql = "INSERT INTO " + prefix + "tokens (`token_id`, `token_uuid`, `creator_id`, `command`) VALUES " +
+                    "(NULL, ?, (SELECT player_id FROM " + prefix + "players WHERE uuid = ?), ?);";
+            System.out.println(sql);
+            Connection connection = DatabaseProvider.getConnection(plugin);
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, token.getUuid());
+            stmt.setString(2, token.getPlayer().getUniqueId().toString());
+            stmt.setString(3, token.getCommand());
+            stmt.executeUpdate();
+            connection.close();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    public String getToken(String uuid) {
+        String sql = "SELECT command  FROM " + prefix + "tokens" +
+                " WHERE token_uuid = ?;";
+        Connection connection = DatabaseProvider.getConnection(plugin);
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, uuid);
+            ResultSet result = stmt.executeQuery();
+            result.next();
+            String command = result.getString("command");
+            connection.close();
+            return command;
+        } catch (SQLException | NullPointerException e) {
+            System.out.println(e);
+            return null;
         }
     }
 

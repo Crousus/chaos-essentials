@@ -150,3 +150,45 @@ pipe_disabled: '&8[&e&l!&8] &6&lPipe &8» &aDeine Schilder werden wieder normal 
 
 no_sign_space: '&8[&e&l!&8] &6&lPipe &8» &cDiese Variable passt nicht mehr aufs Schild!'
 
+#############################################
+############    Quest Rules    ##############
+#############################################
+
+quest_required: '&8[&e&l!&8] &6&lQuest &8» &cDu brauchst die Quest %questname% um das hier sammeln zu können!'
+
+rule_added:
+  - '&8[&e&l!&8] &6&lQuest &8» &aQuestregel hinzugefügt!'
+  - '&aBlock: &e%block%'
+  - '&aQuest Name: &e%quest%'
+  - '&aTyp: &e%type%'
+  - '&aRegenarationsZeit: &e%replant_time%'
+  - '&aSound: &e%sound%'
+
+rule_delete: '&8[&e&l!&8] &6&lQuest &8» &cRegel gelöscht!'
+
+rule_exists: '&8[&e&l!&8] &6&lQuest &8» &cFür diesen Block gibt es bereits eine Regel!'
+
+#############################################
+############    Anti Afk    ##############
+#############################################
+
+afk_time: 15
+
+afk_message: '&8[&e&l!&8] &6&lQuest &8» &cAFK Status erkannt. Teleportiere zum Spawn...!'
+
+afk_location:
+  world: world
+  x: 82
+  y: 89
+  z: 151
+
+#############################################
+##############    Deaths    #################
+#############################################
+
+no_death: '&8[&e&l!&8] &6&lServer &8» &cKein Tod zu diesem Spieler gefunden'
+
+deaths_usage: '&8[&e&l!&8] &6&lServer &8» &cVerwendung: /deaths <typ> <Spieler>'
+
+
+

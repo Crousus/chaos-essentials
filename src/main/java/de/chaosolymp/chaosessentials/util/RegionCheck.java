@@ -3,11 +3,12 @@ package de.chaosolymp.chaosessentials.util;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.griefcraft.model.Protection;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,11 +21,8 @@ public class RegionCheck {
         if (WorldGuard.getInstance().getPlatform().getSessionManager().hasBypass(localPlayer, localPlayer.getWorld()))
             return true;
 
-        com.sk89q.worldedit.util.Location wgLoc = new com.sk89q.worldedit.util.Location(localPlayer.getWorld(), loc.getX(), loc.getY(), loc.getZ());
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionQuery query = container.createQuery();
-
-        if (query.testState(wgLoc, localPlayer, Flags.BUILD)) {
+        RegionQuery query = getQuery();
+        if (query.testState(BukkitAdapter.adapt(loc), localPlayer, Flags.BUILD)) {
             LWCPlugin lwcPlugin = (LWCPlugin) Bukkit.getPluginManager().getPlugin("LWC");
             LWC lwc = lwcPlugin.getLWC();
             if (lwc.isProtectable(loc.getBlock())) {
@@ -37,6 +35,13 @@ public class RegionCheck {
             }
         }
         return false;
+    }
 
+    public static ApplicableRegionSet getRegions(Location loc) {
+        return getQuery().getApplicableRegions(BukkitAdapter.adapt(loc));
+    }
+
+    private static RegionQuery getQuery() {
+        return WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
     }
 }

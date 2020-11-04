@@ -61,4 +61,15 @@ public class EditPermission {
         }
         return false;
     }
+
+    public void addGroupPermission(String groupName, String nodeString) {
+        api.getGroupManager().modifyGroup(groupName, group -> {
+            PermissionNode.Builder builder = PermissionNode.builder(nodeString);
+
+            builder.value(true).expiry(24, TimeUnit.HOURS);
+            group.data().add(builder.build());
+
+        });
+
+    }
 }

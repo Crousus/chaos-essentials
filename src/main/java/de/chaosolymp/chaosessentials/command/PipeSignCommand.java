@@ -32,8 +32,7 @@ public class PipeSignCommand implements CommandExecutor, Listener {
                     players.remove(player);
                     MessageConverter.sendConfMessage(player, "pipe_disabled");
                 }
-            }
-            else{
+            } else {
                 MessageConverter.sendNoPermission(player);
             }
         }

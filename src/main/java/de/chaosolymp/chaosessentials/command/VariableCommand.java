@@ -1,9 +1,9 @@
 package de.chaosolymp.chaosessentials.command;
 
 import de.chaosolymp.chaosessentials.ChaosEssentials;
-import de.chaosolymp.chaosessentials.config.VariableConfig;
 import de.chaosolymp.chaosessentials.util.MessageConverter;
 import de.chaosolymp.chaosessentials.util.RegionCheck;
+import de.chaosolymp.chaosessentials.util.VariableCache;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -12,21 +12,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 
 public class VariableCommand implements CommandExecutor {
-
-    private final HashMap<String, String> varMap = new HashMap<>();
-
-    public VariableCommand() {
-        Set<String> keySet = VariableConfig.get().getKeys(true);
-        for (String k : keySet) {
-            varMap.put(k, VariableConfig.get().getString(k));
-        }
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -44,7 +31,7 @@ public class VariableCommand implements CommandExecutor {
                     if (args[0].equals("clear") || args[0].equals("info") || args[0].equals("i")) {
                         isCommand = true;
                     }
-                    if(args.length > 1 && (args[1].equals("bl") || args[1].equals("blacklist"))){
+                    if (args.length > 1 && (args[1].equals("bl") || args[1].equals("blacklist"))) {
                         line = 3;
                     }
                 } else {
@@ -64,7 +51,7 @@ public class VariableCommand implements CommandExecutor {
 
                                 String var = null;
                                 if (!isCommand)
-                                    var = varMap.get(m.toString().toLowerCase());
+                                    var = VariableCache.getInstance().getValue(m.toString().toLowerCase());
                                 String signText = sign.getLine(line);
                                 if (var != null || isCommand) {
                                     if (!isCommand) {
@@ -92,10 +79,18 @@ public class VariableCommand implements CommandExecutor {
                                             String msg = ChaosEssentials.getPlugin().getConfig().getString("pipe_info");
                                             String varString = "";
                                             for (String v : vars) {
-                                                if (getKeyFromValue(v) != null)
-                                                    varString += " " + getKeyFromValue(v);
+                                                if (VariableCache.getInstance().getKeyFromValue(v) != null)
+                                                    varString += " " + VariableCache.getInstance().getKeyFromValue(v);
                                             }
                                             msg = msg.replaceAll("%items%", varString);
+
+                                            vars = sign.getLine(line + 1).split(",");
+                                            varString = "";
+                                            for (String v : vars) {
+                                                varString += " " + VariableCache.getInstance().getKeyFromValue(v);
+                                            }
+
+                                            msg = msg.replaceAll("%blacklist%", varString);
                                             MessageConverter.sendMessage(player, msg);
                                         }
                                     }
@@ -122,16 +117,4 @@ public class VariableCommand implements CommandExecutor {
         return false;
     }
 
-    private String getKeyFromValue(String value) {
-        value = value.replaceAll("%", "");
-
-        if (!varMap.containsValue(value))
-            return null;
-        for (Map.Entry<String, String> v : varMap.entrySet()) {
-            if (v.getValue().equals(value)) {
-                return v.getKey();
-            }
-        }
-        return null;
-    }
 }
