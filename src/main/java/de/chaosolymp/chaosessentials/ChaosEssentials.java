@@ -93,10 +93,9 @@ public class ChaosEssentials extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerJoinAndLeaveListener(), this);
         Bukkit.getPluginManager().registerEvents(new RandomTeleportListener(), this);
         Bukkit.getPluginManager().registerEvents(new XpSpammerListener(), this);
-        //Bukkit.getPluginManager().registerEvents(new TokenListener(), this);
+        Bukkit.getPluginManager().registerEvents(new TokenListener(), this);
         Bukkit.getPluginManager().registerEvents(pipe, this);
         Bukkit.getPluginManager().registerEvents(harvestListener, this);
-        //Bukkit.getPluginManager().registerEvents(new CollectListener(), this);
 
         getCommand("var").setTabCompleter(new VariableTabCompleter());
         getCommand("deaths").setTabCompleter(new DeathsTabCompleter());

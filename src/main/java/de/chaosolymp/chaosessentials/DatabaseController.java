@@ -252,15 +252,17 @@ public class DatabaseController {
     }
 
     public String getToken(String uuid) {
-        String sql = "SELECT command  FROM " + prefix + "tokens" +
-                " WHERE token_uuid = ?;";
+    String sql = "SELECT token.command AS command, IF EXISTS (deval.time) AS deval FROM " + prefix + "tokens AS token, " + prefix + "devaluations AS deval" +
+                " WHERE token.token_uuid = ? AND token.token_uuid = deval.token_id;";
         Connection connection = DatabaseProvider.getConnection(plugin);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, uuid);
+            System.out.println(stmt.toString());
             ResultSet result = stmt.executeQuery();
             result.next();
             String command = result.getString("command");
+            System.out.println(command + "" + result.getString("deval"));
             connection.close();
             return command;
         } catch (SQLException | NullPointerException e) {
