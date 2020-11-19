@@ -36,7 +36,7 @@ public class PlayerJoinAndLeaveListener implements Listener {
                 public void run() {
                     noFall.remove(player);
                 }
-            }.runTaskLater(ChaosEssentials.getPlugin(), 100);
+            }.runTaskLater(ChaosEssentials.getPlugin(), 20 * 20);
         }
     }
 
