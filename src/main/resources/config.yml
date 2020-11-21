@@ -176,6 +176,8 @@ afk_time: 15
 
 afk_message: '&8[&e&l!&8] &6&lQuest &8» &cAFK Status erkannt. Teleportiere zum Spawn...!'
 
+afk_warn: '&8[&e&l!&8] &6&lQuest &8» &cAFK Status erkannt. Teleportiere in Kürze zum Spawn'
+
 afk_location:
   world: world
   x: 82

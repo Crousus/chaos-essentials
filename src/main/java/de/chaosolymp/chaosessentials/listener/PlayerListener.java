@@ -1,6 +1,9 @@
 package de.chaosolymp.chaosessentials.listener;
 
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import de.chaosolymp.chaosessentials.ChaosEssentials;
+import de.chaosolymp.chaosessentials.util.EditPermission;
 import de.chaosolymp.chaosessentials.util.MessageConverter;
 import de.chaosolymp.chaosessentials.util.PlayerDeath;
 import de.chaosolymp.chaosessentials.util.RegionCheck;
@@ -15,14 +18,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
-import java.awt.*;
 import java.util.*;
 
 public class PlayerListener implements Listener {
@@ -35,6 +36,7 @@ public class PlayerListener implements Listener {
     private final int MAX_FLY = ChaosEssentials.getPlugin().getConfig().getInt("max_fly");
     private final int DECREASE = ChaosEssentials.getPlugin().getConfig().getInt("fly_decrease");
     private final int INCREASE = ChaosEssentials.getPlugin().getConfig().getInt("fly_increase");
+    private boolean isflycheck = false;
     private final Location spawnLoc = new Location(Bukkit.getWorld(
             ChaosEssentials.getPlugin().getConfig().getString("afk_location.world")),
             ChaosEssentials.getPlugin().getConfig().getInt("afk_location.x"),
@@ -44,21 +46,49 @@ public class PlayerListener implements Listener {
     public PlayerListener() {
         initAfkTask();
         initPlayerTracker();
-        if(ChaosEssentials.getPlugin().getConfig().getBoolean("flycheck")){
+        if (ChaosEssentials.getPlugin().getConfig().getBoolean("flycheck")) {
             initFlyCheck();
             initNervedFly();
             ChaosEssentials.log("initFly");
+            isflycheck = true;
         }
 
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
-        if (e.getFrom().getX() == e.getTo().getX() && e.getTo().getZ() == e.getTo().getZ()) {
+    public void onSprintToggle(PlayerToggleSprintEvent e) {
+        resetAfkTimer(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onSleep(PlayerBedEnterEvent e) {
+        resetAfkTimer(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onFish(PlayerFishEvent e) {
+        resetAfkTimer(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e) {
+        resetAfkTimer(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        if (((int) e.getFrom().getX()) == ((int) e.getTo().getX()) && ((int) e.getTo().getZ()) == ((int) e.getTo().getZ())) {
             return;
         }
-        if (playerMap.containsKey(e.getPlayer()))
-            playerMap.replace(e.getPlayer(), 0);
+        Vector vec = e.getFrom().toVector().getCrossProduct(e.getTo().toVector());
+        if ((Math.abs(vec.getX()) + Math.abs(vec.getZ()) + Math.abs(vec.getY())) > 46 && (Math.abs(vec.getY()) + Math.abs(vec.getX()) + Math.abs(vec.getZ())) < 54) {
+            resetAfkTimer(e.getPlayer());
+        }
+    }
+
+    private void resetAfkTimer(Player p) {
+        if (playerMap.containsKey(p))
+            playerMap.replace(p, 0);
     }
 
     @EventHandler
@@ -68,13 +98,19 @@ public class PlayerListener implements Listener {
             playerHistory.put(e.getPlayer().getName(), history);
         }
 
-        if(e.getPlayer().hasPermission("ce.nervedfly") && !e.getPlayer().hasPermission("ce.fullfly") && !nervedFlyPlayers.containsKey(e.getPlayer().getUniqueId().toString())){
-            nervedFlyPlayers.put(e.getPlayer().getUniqueId().toString(),MAX_FLY);
+        if (e.getPlayer().hasPermission("ce.nervedfly") && !e.getPlayer().hasPermission("ce.fullfly") && !nervedFlyPlayers.containsKey(e.getPlayer().getUniqueId().toString())) {
+            nervedFlyPlayers.put(e.getPlayer().getUniqueId().toString(), MAX_FLY);
+        }
+
+        if (!e.getPlayer().hasPlayedBefore() && isflycheck) {
+            EditPermission editPermission = new EditPermission();
+            editPermission.addPermission(e.getPlayer(), "ce.afk.bypass", 72L, null, null);
         }
 
         if (e.getPlayer().hasPermission("ce.afk.bypass")) {
             return;
         }
+
         playerMap.put(e.getPlayer(), 0);
     }
 
@@ -119,9 +155,18 @@ public class PlayerListener implements Listener {
                 for (Map.Entry<Player, Integer> player : playerMap.entrySet()) {
                     player.setValue(player.getValue().intValue() + 6);
                     if (playerMap.get(player.getKey()) > afkTime) {
+                        ApplicableRegionSet regions = RegionCheck.getRegions(player.getKey().getLocation());
+                        for (ProtectedRegion rg : regions) {
+                            if (rg.getId().equals("spawn")) {
+                                player.setValue(0);
+                                return;
+                            }
+                        }
                         player.getKey().teleport(spawnLoc);
                         MessageConverter.sendConfMessage(player.getKey(), "afk_message");
                         player.setValue(0);
+                    } else if (playerMap.get(player.getKey()) > (afkTime - 30) && playerMap.get(player.getKey()) < (afkTime - 23)) {
+                        MessageConverter.sendConfMessage(player.getKey(), "afk_warn");
                     }
                 }
             }
@@ -149,23 +194,23 @@ public class PlayerListener implements Listener {
             @Override
             public void run() {
                 for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                    if(!player.hasPermission("essentials.fly") && !player.hasPermission("ce.nervedfly")){
-                        if(player.getAllowFlight() && player.getGameMode() == GameMode.SURVIVAL) {
-                            if(!RegionCheck.hasFlag(player.getLocation(),"fly")){
+                    if (!player.hasPermission("essentials.fly") && !player.hasPermission("ce.nervedfly")) {
+                        if (player.getAllowFlight() && player.getGameMode() == GameMode.SURVIVAL) {
+                            if (!RegionCheck.hasFlag(player.getLocation(), "fly")) {
                                 player.setAllowFlight(false);
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 30 * 20, 100,false,false));
-                                MessageConverter.sendConfMessage(player,"fly_expired");
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 30 * 20, 100, false, false));
+                                MessageConverter.sendConfMessage(player, "fly_expired");
                             }
                         }
                     }
                 }
             }
-        }.runTaskTimer(ChaosEssentials.getPlugin(),300L,30*20L);
+        }.runTaskTimer(ChaosEssentials.getPlugin(), 300L, 30 * 20L);
 
     }
 
-    private void initNervedFly(){
-        new BukkitRunnable(){
+    private void initNervedFly() {
+        new BukkitRunnable() {
 
             @Override
             public void run() {
@@ -173,7 +218,7 @@ public class PlayerListener implements Listener {
                     Player p = Bukkit.getServer().getPlayer(UUID.fromString(entry.getKey()));
                     if (p != null) {
                         if (!p.hasPermission("essentials.fly")) {
-                            if (p.isFlying() && !RegionCheck.hasFlag(p.getLocation(),"fly")) {
+                            if (p.isFlying() && !RegionCheck.hasFlag(p.getLocation(), "fly")) {
                                 entry.setValue(entry.getValue() - DECREASE);
                                 if (entry.getValue() < 1) {
                                     entry.setValue(0);
@@ -201,7 +246,7 @@ public class PlayerListener implements Listener {
                             if (i <= percent) {
                                 component = new TextComponent("|");
                             } else {
-                                if((i & 1) == 1)
+                                if ((i & 1) == 1)
                                     component = new TextComponent(" ");
                                 else
                                     continue;
@@ -221,7 +266,7 @@ public class PlayerListener implements Listener {
                     }
                 }
             }
-        }.runTaskTimerAsynchronously(ChaosEssentials.getPlugin(),150,20);
+        }.runTaskTimerAsynchronously(ChaosEssentials.getPlugin(), 150, 20);
     }
 
     public PlayerDeath getDeaths(String key) {

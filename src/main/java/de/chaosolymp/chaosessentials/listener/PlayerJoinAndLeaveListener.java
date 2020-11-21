@@ -22,8 +22,15 @@ public class PlayerJoinAndLeaveListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
 
-        DatabaseController db = new DatabaseController();
-        db.addPlayer(player.getUniqueId().toString());
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                DatabaseController db = new DatabaseController();
+                db.addPlayer(player.getUniqueId().toString());
+            }
+        }.runTaskAsynchronously(ChaosEssentials.getPlugin());
+
 
         if (player.hasPermission("ce.auto.creative")) {
             player.setGameMode(GameMode.CREATIVE);
@@ -53,8 +60,15 @@ public class PlayerJoinAndLeaveListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        DatabaseController db = new DatabaseController();
-        db.updatePlayer(e.getPlayer().getUniqueId().toString());
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                DatabaseController db = new DatabaseController();
+                db.updatePlayer(e.getPlayer().getUniqueId().toString());
+            }
+        }.runTaskAsynchronously(ChaosEssentials.getPlugin());
+
     }
 
 }
