@@ -27,11 +27,15 @@ public class EditPermission {
             if (duration > 0)
                 builder.expiry(duration, TimeUnit.HOURS);
 
-            for (String s : servers)
-                builder.withContext(DefaultContextKeys.SERVER_KEY, s);
+            if (servers != null) {
+                for (String s : servers)
+                    builder.withContext(DefaultContextKeys.SERVER_KEY, s);
+            }
 
-            for (String w : worlds)
-                builder.withContext(DefaultContextKeys.WORLD_KEY, w);
+            if (worlds != null) {
+                for (String w : worlds)
+                    builder.withContext(DefaultContextKeys.WORLD_KEY, w);
+            }
 
             PermissionNode node = builder.build();
             user.data().add(node);

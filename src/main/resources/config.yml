@@ -176,6 +176,8 @@ afk_time: 15
 
 afk_message: '&8[&e&l!&8] &6&lQuest &8» &cAFK Status erkannt. Teleportiere zum Spawn...!'
 
+afk_warn: '&8[&e&l!&8] &6&lQuest &8» &cAFK Status erkannt. Teleportiere in Kürze zum Spawn'
+
 afk_location:
   world: world
   x: 82
@@ -189,6 +191,21 @@ afk_location:
 no_death: '&8[&e&l!&8] &6&lServer &8» &cKein Tod zu diesem Spieler gefunden'
 
 deaths_usage: '&8[&e&l!&8] &6&lServer &8» &cVerwendung: /deaths <typ> <Spieler>'
+
+#############################################
+###########    Miscellaneous    #############
+#############################################
+
+flycheck: true
+
+fly_expired: '&8[&e&l!&8] &6&lServer &8» &cDein Fly ist ausgelaufen!'
+
+max_fly: 900
+
+fly_decrease: 5
+
+fly_increase: 1
+
 
 
 
