@@ -45,7 +45,7 @@ public class DatabaseController {
                 " PRIMARY KEY (`player_id`, `uuid`));";
 
         String tokenTable = "CREATE TABLE IF NOT EXISTS " + prefix + "tokens ( `token_id` INT NOT NULL AUTO_INCREMENT , `token_uuid` VARCHAR(36) NOT NULL , `creator_id` INT(11) NOT NULL," +
-                " `command` VARCHAR(512)," +
+                " `command` VARCHAR(512), `multi_use` BOOLEAN DEFAULT FALSE, valid_until TIMESTAMP," +
                 " PRIMARY KEY (`token_id`, `token_uuid`), FOREIGN KEY (`creator_id`) REFERENCES " + prefix + "players (player_id));";
 
         String devaluationsTable = "CREATE TABLE IF NOT EXISTS " + prefix + "devaluations ( `devaluation_id` INT NOT NULL AUTO_INCREMENT , `token_id` INT(11) NOT NULL , `user_id` INT(11) NOT NULL," +
@@ -235,14 +235,16 @@ public class DatabaseController {
 
     public void addToken(Token token) {
         try {
-            String sql = "INSERT INTO " + prefix + "tokens (`token_id`, `token_uuid`, `creator_id`, `command`) VALUES " +
-                    "(NULL, ?, (SELECT player_id FROM " + prefix + "players WHERE uuid = ?), ?);";
+            String sql = "INSERT INTO " + prefix + "tokens (`token_id`, `token_uuid`, `creator_id`, `command`, `multi_use`, `valid_until`) VALUES " +
+                    "(NULL, ?, (SELECT player_id FROM " + prefix + "players WHERE uuid = ?), ?, ?, ?);";
             System.out.println(sql);
             Connection connection = DatabaseProvider.getConnection(plugin);
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, token.getUuid());
-            stmt.setString(2, token.getPlayer().getUniqueId().toString());
+            stmt.setString(2, token.getPlayer());
             stmt.setString(3, token.getCommand());
+            stmt.setBoolean(4, token.isMultiUse());
+            stmt.setDate(5, token.getValidAsDate());
             stmt.executeUpdate();
             connection.close();
 
@@ -251,24 +253,51 @@ public class DatabaseController {
         }
     }
 
-    public String getToken(String uuid) {
-    String sql = "SELECT token.command AS command, IF EXISTS (deval.time) AS deval FROM " + prefix + "tokens AS token, " + prefix + "devaluations AS deval" +
-                " WHERE token.token_uuid = ? AND token.token_uuid = deval.token_id;";
+    public Token getToken(String uuid) {
+    String sql = "SELECT token.command, token.token_uuid, token.multi_use, token.valid_until, players.uuid FROM " + prefix + "tokens AS token, "+ prefix + "players AS players" +
+                " WHERE token.token_uuid = ? AND token.creator_id = players.player_id;";
         Connection connection = DatabaseProvider.getConnection(plugin);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, uuid);
-            System.out.println(stmt.toString());
             ResultSet result = stmt.executeQuery();
-            result.next();
-            String command = result.getString("command");
-            System.out.println(command + "" + result.getString("deval"));
+            Token token = null;
+            if(result.next()) {
+                token = new Token();
+                token.setCommand(result.getString(1));
+                token.setUuid(result.getString(2));
+                token.setMultiUse(result.getBoolean(3));
+                token.setValidUntil(result.getDate(4).toLocalDate());
+                token.setPlayer(result.getString(5));
+                checkValidy(token);
+            }
             connection.close();
-            return command;
+            return token;
         } catch (SQLException | NullPointerException e) {
             System.out.println(e);
             return null;
         }
+    }
+
+    public boolean checkValidy(Token token){
+        String sql = "SELECT user_id, time FROM " + prefix + "devaluations WHERE token_id = ?";
+        Connection connection = DatabaseProvider.getConnection(plugin);
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1,token.getUuid());
+            ResultSet result = stmt.executeQuery();
+            if(result.next()){
+                token.setPlayer(result.getString(1));
+                token.setRedeem(result.getTimestamp(2));
+                return true;
+            }
+            else
+                return false;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

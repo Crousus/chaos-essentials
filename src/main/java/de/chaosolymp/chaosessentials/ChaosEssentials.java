@@ -73,7 +73,7 @@ public class ChaosEssentials extends JavaPlugin {
         getCommand("crea").setExecutor(new GamemodeCommand());
         getCommand("xpcloud").setExecutor(new XpCloudCommand());
         getCommand("var").setExecutor(new VariableCommand());
-        getCommand("token").setExecutor(new CreateTokenCommand());
+        getCommand("token").setExecutor(new TokenCommand());
         getCommand("ctp").setExecutor(new CTeleportCommand());
 
 
