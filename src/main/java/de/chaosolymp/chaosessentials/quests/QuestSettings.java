@@ -4,6 +4,7 @@ import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
 public class QuestSettings {
+    private String itemType;
     private String quest;
     private int stage;
     private int type;
@@ -11,6 +12,14 @@ public class QuestSettings {
     private String region;
     private Sound sound;
     private ItemStack item;
+
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
 
     public String getQuest() {
         return quest;

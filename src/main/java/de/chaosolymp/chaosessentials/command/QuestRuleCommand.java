@@ -5,6 +5,7 @@ import de.chaosolymp.chaosessentials.config.QuestConfig;
 import de.chaosolymp.chaosessentials.listener.HarvestListener;
 import de.chaosolymp.chaosessentials.util.MessageConverter;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,16 +39,15 @@ public class QuestRuleCommand implements CommandExecutor {
                             MessageConverter.sendMessage(player, getMessage(message, "block").replaceAll("%block%", block));
                             for (int i = 1; i < args.length; i++) {
                                 if (NumberUtils.isNumber(args[i]))
-                                    QuestConfig.get().addDefault(path + "." + menu[i - 1], Integer.parseInt(args[i]));
+                                    QuestConfig.get().set(path + "." + menu[i - 1], Integer.parseInt(args[i]));
                                 else
-                                    QuestConfig.get().addDefault(path + "." + menu[i - 1], args[i].replaceAll("/s", " "));
+                                    QuestConfig.get().set(path + "." + menu[i - 1], args[i].replaceAll("/s", " "));
 
                                 String msg = getMessage(message, menu[i - 1]);
                                 if (msg != null)
                                     MessageConverter.sendMessage(player, msg.replaceAll("%" + menu[i - 1] + "%", args[i]));
                             }
-                            QuestConfig.get().addDefault(path + "." + menu[menu.length - 1], player.getInventory().getItemInMainHand().serialize());
-                            QuestConfig.get().options().copyDefaults(true);
+                            QuestConfig.get().set(path + "." + menu[menu.length - 1], player.getInventory().getItemInMainHand().serialize());
                         } else
                             MessageConverter.sendConfMessage(player, "rule_exists");
                     } else if (args[0].equals("del")) {
@@ -57,6 +57,7 @@ public class QuestRuleCommand implements CommandExecutor {
                         }
                     }
                     QuestConfig.save();
+                    QuestConfig.setup();
                     harvestListener.cacheSettings();
                 }
             }
