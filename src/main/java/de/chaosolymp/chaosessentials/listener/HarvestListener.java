@@ -12,6 +12,7 @@ import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
 import fr.skytasul.quests.players.PlayersManager;
 import fr.skytasul.quests.structure.Quest;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,11 +30,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class HarvestListener implements Listener {
 
     private final HashMap<String, QuestSettings> settings = new HashMap<>();
+    private final HashSet<Replant> replants = new HashSet<>();
 
     public HarvestListener() {
         cacheSettings();
@@ -42,9 +45,11 @@ public class HarvestListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
         String block = e.getBlock().getType().toString();
+        System.out.println(settings.entrySet().toArray().toString());
         if (settings.containsKey(block)) {
             Player player = e.getPlayer();
             QuestSettings setting = settings.get(e.getBlock().getType().toString());
+            System.out.println(setting.getItem().getType().toString());
             ApplicableRegionSet regionSet = RegionCheck.getRegions(e.getBlock().getLocation());
             RegionFetch:
             for (ProtectedRegion rg : regionSet.getRegions()) {
@@ -179,16 +184,12 @@ public class HarvestListener implements Listener {
     }
 
     private void replant(Block block, Material m, long time) {
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                block.setType(m, false);
-            }
-        }.runTaskLater(ChaosEssentials.getPlugin(), time);
+        Replant replant = new Replant(block, m);
+        replant.runTaskLater(ChaosEssentials.getPlugin(),time);
+        replants.add(replant);
     }
 
-    public void cacheSettings() {
+    public synchronized void cacheSettings() {
         ConfigurationSection section = QuestConfig.get().getConfigurationSection("item");
         if (section != null) {
             Set<String> keys = section.getKeys(false);
@@ -196,6 +197,7 @@ public class HarvestListener implements Listener {
             for (String key : keys) {
                 String path = "item." + key;
                 QuestSettings setting = new QuestSettings();
+                setting.setItemType(key);
                 setting.setQuest(config.getString(path + ".quest"));
                 setting.setStage(config.getInt(path + ".stage"));
                 setting.setType(config.getInt(path + ".type"));
@@ -205,6 +207,29 @@ public class HarvestListener implements Listener {
                 setting.setItem(ItemStack.deserialize(config.getConfigurationSection(path + ".item_stack").getValues(true)));
                 settings.put(key, setting);
             }
+        }
+    }
+
+    public void replantAll(){
+        Replant[] array = new Replant[0];
+        for(Replant replant : replants.toArray(array)){
+            replant.cancel();
+            replant.run();
+        }
+    }
+
+    private class Replant extends BukkitRunnable{
+        private Block block;
+        private Material m;
+        public Replant(Block block, Material m){
+            this.block = block;
+            this.m = m;
+        }
+
+        @Override
+        public void run() {
+            block.setType(m, false);
+            replants.remove(this);
         }
     }
 }

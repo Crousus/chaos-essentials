@@ -40,7 +40,7 @@ dependencies {
     compileOnly 'com.acrobot.chestshop:chestshop:3.10'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.5-SNAPSHOT'
     compileOnly 'com.griefcraft.lwc:LWCX:2.2.6'
-    compileOnly 'fr.skytasul:beautyquests-core:0.18.0-SNAPSHOT'
+    compileOnly 'fr.skytasul:beautyquests-core:0.19.0-SNAPSHOT'
 }
 
 processResources {

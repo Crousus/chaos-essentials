@@ -18,6 +18,7 @@ public class ChaosEssentials extends JavaPlugin {
 
     private static ChaosEssentials plugin;
     private Economy econ;
+    private HarvestListener harvestListener;
 
     public void onEnable() {
         plugin = this;
@@ -78,7 +79,7 @@ public class ChaosEssentials extends JavaPlugin {
 
 
         PipeSignCommand pipe = new PipeSignCommand();
-        HarvestListener harvestListener = new HarvestListener();
+        harvestListener = new HarvestListener();
 
         getCommand("pipe").setExecutor(pipe);
         getCommand("questrule").setExecutor(new QuestRuleCommand(harvestListener));
@@ -100,6 +101,7 @@ public class ChaosEssentials extends JavaPlugin {
 
         getCommand("var").setTabCompleter(new VariableTabCompleter());
         getCommand("deaths").setTabCompleter(new DeathsTabCompleter());
+        getCommand("creload").setExecutor(new ReloadCommand(harvestListener));
 
         PlayerListener playerListener = new PlayerListener();
         Bukkit.getPluginManager().registerEvents(playerListener, this);
@@ -108,6 +110,11 @@ public class ChaosEssentials extends JavaPlugin {
         QuestSwitchTask.runPermissionTimer(true);
 
 
+    }
+
+    public void onDisable(){
+        Bukkit.getScheduler().cancelTasks(plugin);
+        harvestListener.replantAll();
     }
 
     public static ChaosEssentials getPlugin() {
