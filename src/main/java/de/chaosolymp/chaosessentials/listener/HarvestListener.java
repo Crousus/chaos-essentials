@@ -7,6 +7,7 @@ import de.chaosolymp.chaosessentials.config.QuestConfig;
 import de.chaosolymp.chaosessentials.quests.QuestSettings;
 import de.chaosolymp.chaosessentials.util.MessageConverter;
 import de.chaosolymp.chaosessentials.util.RegionCheck;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayerQuestDatas;
@@ -28,10 +29,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class HarvestListener implements Listener {
 
@@ -56,34 +54,36 @@ public class HarvestListener implements Listener {
                 if (rg.getId().equals(setting.getRegion())) {
                     if (player.hasPermission("ce.harvest")) {
                         PlayerAccount account = PlayersManager.getPlayerAccount(player);
-                        Collection<PlayerQuestDatas> quests = account.getQuestsDatas();
-                        for (PlayerQuestDatas data : quests) {
-                            Quest quest = data.getQuest();
+                        List<Quest> quests = QuestsAPI.getQuestsStarteds(account);
+                        for (Quest quest : quests) {
+                            try {
+                                if (quest.getBranchesManager().getPlayerBranch(account) != null) {
+                                    AbstractStage stage = quest.getBranchesManager().getPlayerBranch(account).getRegularStage(account.getQuestDatas(quest).getStage());
+                                    if (stage.getID() == setting.getStage() && quest.getName().equals(setting.getQuest())) {
 
-                            if (quest.getBranchesManager().getPlayerBranch(account) != null) {
-                                AbstractStage stage = quest.getBranchesManager().getPlayerBranch(account).getRegularStage(data.getStage());
-                                if (stage.getID() == setting.getStage() && quest.getName().equals(setting.getQuest())) {
+                                        e.setDropItems(false);
+                                        if (setting.getSound() != null)
+                                            player.playSound(player.getLocation(), setting.getSound(), 1f, 2f);
 
-                                    e.setDropItems(false);
-                                    if (setting.getSound() != null)
-                                        player.playSound(player.getLocation(), setting.getSound(), 1f, 2f);
-
-                                    switch (setting.getType()) {
-                                        case 1:
-                                            replant(e.getBlock(), e.getBlock().getType(), setting.getReplant_time());
-                                            System.out.println(1);
-                                            break;
-                                        case 2:
-                                            replant(e.getBlock(), e.getBlock().getType(), setting.getReplant_time());
-                                            e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), setting.getItem());
-                                            System.out.println(2);
-                                            break;
-                                        case 3:
-                                            e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), setting.getItem());
-                                            System.out.println(3);
+                                        switch (setting.getType()) {
+                                            case 1:
+                                                replant(e.getBlock(), e.getBlock().getType(), setting.getReplant_time());
+                                                System.out.println(1);
+                                                break;
+                                            case 2:
+                                                replant(e.getBlock(), e.getBlock().getType(), setting.getReplant_time());
+                                                e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), setting.getItem());
+                                                System.out.println(2);
+                                                break;
+                                            case 3:
+                                                e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), setting.getItem());
+                                                System.out.println(3);
+                                        }
+                                        break RegionFetch;
                                     }
-                                    break RegionFetch;
                                 }
+                            } catch (ArrayIndexOutOfBoundsException ex) {
+
                             }
                         }
                         sendQuestRequired(player, setting.getQuest());

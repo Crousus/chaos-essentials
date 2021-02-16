@@ -21,7 +21,8 @@ public class TokenListener implements Listener {
                 String tag = tagEditor.getTag();
                 if (tag != null) {
                     DatabaseController db = new DatabaseController();
-                    String command = db.getToken(tag).replaceAll("%player%", e.getPlayer().getName());
+                    //String command = db.getToken(tag).replaceAll("%player%", e.getPlayer().getName());
+                    String command = "Test";
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.substring(1));
                     e.getPlayer().getInventory().remove(item);
                 }
