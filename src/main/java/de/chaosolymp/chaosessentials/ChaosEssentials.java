@@ -6,7 +6,6 @@ import de.chaosolymp.chaosessentials.config.QuestConfig;
 import de.chaosolymp.chaosessentials.config.RandomTpConfig;
 import de.chaosolymp.chaosessentials.config.VariableConfig;
 import de.chaosolymp.chaosessentials.listener.*;
-import de.chaosolymp.chaosessentials.quests.QuestSwitchTask;
 import de.chaosolymp.chaosessentials.tabcomplete.DeathsTabCompleter;
 import de.chaosolymp.chaosessentials.tabcomplete.VariableTabCompleter;
 import net.milkbowl.vault.economy.Economy;
@@ -23,16 +22,16 @@ public class ChaosEssentials extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
-        if (BuyConfig.buildConfig())
-            BuyConfig.get().options().copyDefaults(true);
+        BuyConfig.setup();
+        BuyConfig.get().options().copyDefaults(true);
         BuyConfig.save();
+        BuyConfig.reload();
 
         RandomTpConfig.setup();
         RandomTpConfig.get().options().copyDefaults(true);
         RandomTpConfig.save();
 
         VariableConfig.setup();
-        VariableConfig.save();
 
         QuestConfig.setup();
         QuestConfig.save();
@@ -73,7 +72,7 @@ public class ChaosEssentials extends JavaPlugin {
         getCommand("average").setExecutor(new AverageCommand());
         getCommand("crea").setExecutor(new GamemodeCommand());
         getCommand("xpcloud").setExecutor(new XpCloudCommand());
-        getCommand("var").setExecutor(new VariableCommand());
+
         getCommand("token").setExecutor(new CreateTokenCommand());
         getCommand("ctp").setExecutor(new CTeleportCommand());
 
@@ -89,6 +88,11 @@ public class ChaosEssentials extends JavaPlugin {
         else
             this.getLogger().info("[ChaosEssentials] MasuiteWarps not found");
 
+        if(Bukkit.getPluginManager().getPlugin("CraftBook5") != null){
+            getCommand("var").setExecutor(new VariableCommand());
+            getCommand("var").setTabCompleter(new VariableTabCompleter());
+        }
+
         Bukkit.getPluginManager().registerEvents(new ExcavatorListener(), this);
         Bukkit.getPluginManager().registerEvents(new MultiToolListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinAndLeaveListener(), this);
@@ -99,17 +103,12 @@ public class ChaosEssentials extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(harvestListener, this);
         //Bukkit.getPluginManager().registerEvents(new CollectListener(), this);
 
-        getCommand("var").setTabCompleter(new VariableTabCompleter());
         getCommand("deaths").setTabCompleter(new DeathsTabCompleter());
         getCommand("creload").setExecutor(new ReloadCommand(harvestListener));
 
         PlayerListener playerListener = new PlayerListener();
         Bukkit.getPluginManager().registerEvents(playerListener, this);
         getCommand("deaths").setExecutor(new DeathsCommand(playerListener));
-
-        QuestSwitchTask.runPermissionTimer(true);
-
-
     }
 
     public void onDisable(){

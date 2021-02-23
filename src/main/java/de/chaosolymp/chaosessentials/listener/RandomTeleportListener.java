@@ -34,7 +34,7 @@ public class RandomTeleportListener implements Listener {
                     if (checkSign(sign)) {
                         if (players.containsKey(e.getPlayer().getUniqueId().toString())) {
                             long time = players.get(e.getPlayer().getUniqueId().toString()) + (RandomTpConfig.get().getInt("worldsettings." + block.getWorld().getName() + ".cooldown") * 1000) - System.currentTimeMillis();
-                            if (players.containsKey(e.getPlayer()) && time > 0) {
+                            if (time > 0) {
                                 String msg = ChaosEssentials.getPlugin().getConfig().getString("tp_cooldown").replaceAll("%time%", String.valueOf(Math.round(time / 1000)));
                                 MessageConverter.sendMessage(e.getPlayer(), msg);
                                 return;
