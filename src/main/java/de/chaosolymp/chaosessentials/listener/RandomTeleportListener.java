@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class RandomTeleportListener implements Listener {
-    final private HashMap<Player, Long> players = new HashMap<>();
+    final private HashMap<String, Long> players = new HashMap<>();
 
     @EventHandler
     public void onRightClick(PlayerInteractEvent e) {
@@ -32,9 +32,9 @@ public class RandomTeleportListener implements Listener {
                 if (e.getPlayer().hasPermission("ce.randomtp")) {
                     Sign sign = (Sign) block.getState();
                     if (checkSign(sign)) {
-                        if (players.containsKey(e.getPlayer())) {
-                            long time = players.get(e.getPlayer()) + (RandomTpConfig.get().getInt("worldsettings." + block.getWorld().getName() + ".cooldown") * 1000) - System.currentTimeMillis();
-                            if (players.containsKey(e.getPlayer()) && time > 0) {
+                        if (players.containsKey(e.getPlayer().getUniqueId().toString())) {
+                            long time = players.get(e.getPlayer().getUniqueId().toString()) + (RandomTpConfig.get().getInt("worldsettings." + block.getWorld().getName() + ".cooldown") * 1000) - System.currentTimeMillis();
+                            if (time > 0) {
                                 String msg = ChaosEssentials.getPlugin().getConfig().getString("tp_cooldown").replaceAll("%time%", String.valueOf(Math.round(time / 1000)));
                                 MessageConverter.sendMessage(e.getPlayer(), msg);
                                 return;
@@ -46,8 +46,8 @@ public class RandomTeleportListener implements Listener {
                             public void run() {
                                 int distance = teleportRandom(block, e.getPlayer());
                                 MessageConverter.sendMessage(e.getPlayer(), ChaosEssentials.getPlugin().getConfig().getString("teleported").replaceAll("%distance%", "" + distance));
-                                players.remove(e.getPlayer());
-                                players.put(e.getPlayer(), System.currentTimeMillis());
+                                players.remove(e.getPlayer().getUniqueId().toString());
+                                players.put(e.getPlayer().getUniqueId().toString(), System.currentTimeMillis());
                             }
                         }.runTaskAsynchronously(ChaosEssentials.getPlugin());
                         e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 6 * 20, 50, false, false));
@@ -56,7 +56,7 @@ public class RandomTeleportListener implements Listener {
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                players.remove(e.getPlayer());
+                                players.remove(e.getPlayer().getUniqueId().toString());
                             }
                         }.runTaskLater(ChaosEssentials.getPlugin(), RandomTpConfig.get().getInt("worldsettings." + block.getWorld().getName() + ".cooldown") * 20L);
                     }
