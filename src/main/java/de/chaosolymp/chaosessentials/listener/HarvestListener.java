@@ -43,11 +43,9 @@ public class HarvestListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
         String block = e.getBlock().getType().toString();
-        System.out.println(settings.entrySet().toArray().toString());
         if (settings.containsKey(block)) {
             Player player = e.getPlayer();
             QuestSettings setting = settings.get(e.getBlock().getType().toString());
-            System.out.println(setting.getItem().getType().toString());
             ApplicableRegionSet regionSet = RegionCheck.getRegions(e.getBlock().getLocation());
             RegionFetch:
             for (ProtectedRegion rg : regionSet.getRegions()) {
@@ -68,16 +66,13 @@ public class HarvestListener implements Listener {
                                         switch (setting.getType()) {
                                             case 1:
                                                 replant(e.getBlock(), e.getBlock().getType(), setting.getReplant_time());
-                                                System.out.println(1);
                                                 break;
                                             case 2:
                                                 replant(e.getBlock(), e.getBlock().getType(), setting.getReplant_time());
                                                 e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), setting.getItem());
-                                                System.out.println(2);
                                                 break;
                                             case 3:
                                                 e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), setting.getItem());
-                                                System.out.println(3);
                                         }
                                         break RegionFetch;
                                     }

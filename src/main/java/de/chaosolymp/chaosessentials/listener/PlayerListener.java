@@ -3,6 +3,8 @@ package de.chaosolymp.chaosessentials.listener;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import de.chaosolymp.chaosessentials.ChaosEssentials;
+import de.chaosolymp.chaosessentials.command.SoulboundCommand;
+import de.chaosolymp.chaosessentials.config.DailyPlayersConfig;
 import de.chaosolymp.chaosessentials.util.EditPermission;
 import de.chaosolymp.chaosessentials.util.MessageConverter;
 import de.chaosolymp.chaosessentials.util.PlayerDeath;
@@ -10,28 +12,41 @@ import de.chaosolymp.chaosessentials.util.RegionCheck;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.*;
 
 public class PlayerListener implements Listener {
 
+
+    private NamespacedKey uuidKey;
+    private NamespacedKey specialItemKey;
     private final HashMap<String, Queue<Location>> playerHistory = new HashMap<>();
     private final HashMap<Player, Integer> playerMap = new HashMap<>();
-    private final HashMap<String, PlayerDeath> playerDeaths = new HashMap<>();
+    private final HashMap<String, Queue<PlayerDeath>> playerDeaths = new HashMap<>();
     private final HashMap<String, Integer> nervedFlyPlayers = new HashMap<>();
+    //private final HashMap<String ,long[]> dailyPlayers = new HashMap<>();
     private final int afkTime = ChaosEssentials.getPlugin().getConfig().getInt("afk_time") * 60;
     private final int MAX_FLY = ChaosEssentials.getPlugin().getConfig().getInt("max_fly");
     private final int DECREASE = ChaosEssentials.getPlugin().getConfig().getInt("fly_decrease");
@@ -52,6 +67,8 @@ public class PlayerListener implements Listener {
             ChaosEssentials.log("initFly");
             isflycheck = true;
         }
+        uuidKey = new NamespacedKey(ChaosEssentials.getPlugin(),"sb_id");
+        specialItemKey = new NamespacedKey(ChaosEssentials.getPlugin(),"special");
 
     }
 
@@ -110,6 +127,40 @@ public class PlayerListener implements Listener {
         if (e.getPlayer().hasPermission("ce.afk.bypass")) {
             return;
         }
+/**
+ *
+ * Coming soon
+        if (e.getPlayer().hasPermission("ce.dailychest")){
+            final String uuid = e.getPlayer().getUniqueId().toString();
+            if(dailyPlayers.containsKey(uuid)){
+                long[] data = dailyPlayers.get(e.getPlayer().getUniqueId().toString());
+                if(data[0] == LocalDate.now().toEpochDay()){
+                    if(data[1] < ChaosEssentials.getPlugin().getConfig().getInt("daily.time") * 60){
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if(data[0] != LocalDate.now().toEpochDay()) {
+                                    data[1] = 0;
+                                    data[0] = LocalDate.now().toEpochDay();
+                                }
+                                if(Bukkit.getPlayer(uuid) != null){
+                                    data[1] = data[1] + 30;
+                                    if(data[1] > ChaosEssentials.getPlugin().getConfig().getInt("daily.time") * 60) {
+                                        Bukkit.getScheduler().runTask(ChaosEssentials.getPlugin(), () ->
+                                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), ChaosEssentials.getPlugin().getConfig()
+                                                        .getString("daily.command").replaceFirst("%player%",Bukkit.getPlayer(uuid).getName())));
+                                        DailyPlayersConfig.get().set(data[1]+"."+uuid,data[1]);
+                                        DailyPlayersConfig.save();
+                                    }
+                                } else {
+                                    this.cancel();
+                                }
+                            }
+                        }.runTaskTimerAsynchronously(ChaosEssentials.getPlugin(),30,30*20);
+                    }
+                }
+            }
+        } **/
 
         playerMap.put(e.getPlayer(), 0);
     }
@@ -124,7 +175,7 @@ public class PlayerListener implements Listener {
         Player player = e.getEntity();
         ChaosEssentials.log("Death of " + player.getName() + " recorded!");
         ChaosEssentials.log(e.getDeathMessage());
-        ChaosEssentials.log("Level: " + e.getNewExp());
+        ChaosEssentials.log("Level: " + player.getLevel());
 
         PlayerDeath death = new PlayerDeath();
         death.setDeathMsg(e.getDeathMessage());
@@ -132,6 +183,7 @@ public class PlayerListener implements Listener {
         death.setNewXp(player.getLevel());
         death.setLostItems(player.getInventory().getContents());
         death.setLostArmor(player.getInventory().getArmorContents());
+        death.setDeathTime(new Timestamp(System.currentTimeMillis()));
 
         Queue<Location> history = playerHistory.get(player.getName());
         ChaosEssentials.log("Last Locations:");
@@ -143,8 +195,62 @@ public class PlayerListener implements Listener {
             i++;
         }
         death.setLastLocations(locations);
-        playerDeaths.put(player.getName(), death);
 
+        if(!playerDeaths.containsKey(player.getName())){
+            Queue<PlayerDeath> deathQueue = new LinkedList<>();
+            playerDeaths.put(player.getName(), deathQueue);
+        } else if(playerDeaths.get(player.getName()).size() >= ChaosEssentials.getPlugin().getConfig().getInt("deaths-save-amount")) {
+            playerDeaths.get(player.getName()).remove();
+        }
+        playerDeaths.get(player.getName()).offer(death);
+
+    }
+
+    @EventHandler
+    public void itemPickupListener(EntityPickupItemEvent e){
+        if(e.getEntity() instanceof Player){
+            if(!SoulboundCommand.isSoulOwner(e.getItem().getItemStack(),e.getEntity().getUniqueId().toString())) {
+                if(e.getEntity().hasPermission("ce.soulbound.bypass")) {
+                    MessageConverter.sendConfMessage(e.getEntity(),"soulbound-alert");
+                } else {
+                    e.setCancelled(true);
+                    e.getItem().setPickupDelay(80);
+                    MessageConverter.sendConfMessage(e.getEntity(), "soulbound-notice");
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void itemClickListener(InventoryClickEvent e) {
+        ItemStack item = e.getCurrentItem();
+        if(item == null || item.getType() == Material.AIR || !SoulboundCommand.isSoulBound(item))
+            return;
+        if (!SoulboundCommand.isSoulOwner(item,e.getWhoClicked().getUniqueId().toString())) {
+            if(e.getWhoClicked().hasPermission("ce.soulbound.bypass")){
+                MessageConverter.sendConfMessage(e.getWhoClicked(), "soulbound-alert");
+            } else {
+                e.setCancelled(true);
+                MessageConverter.sendConfMessage(e.getWhoClicked(), "soulbound-notice");
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.LOW)
+    public void onSpecialItemClick(PlayerInteractEvent e){
+        if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){
+            if(e.useItemInHand().equals(Event.Result.DENY)){
+                return;
+            }
+            ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
+            if(item.getType() != Material.AIR)
+            if(item.getItemMeta().getPersistentDataContainer().has(specialItemKey,PersistentDataType.BYTE)){
+                e.setCancelled(true);
+                ItemStack hat = e.getPlayer().getInventory().getHelmet();
+                e.getPlayer().getInventory().setHelmet(item);
+                e.getPlayer().getInventory().setItemInMainHand(hat);
+            }
+        }
     }
 
     private void initAfkTask() {
@@ -269,7 +375,7 @@ public class PlayerListener implements Listener {
         }.runTaskTimerAsynchronously(ChaosEssentials.getPlugin(), 150, 20);
     }
 
-    public PlayerDeath getDeaths(String key) {
+    public Queue<PlayerDeath> getDeaths(String key) {
         return playerDeaths.get(key);
     }
 }

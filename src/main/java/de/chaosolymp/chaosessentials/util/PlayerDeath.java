@@ -3,6 +3,8 @@ package de.chaosolymp.chaosessentials.util;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
+import java.sql.Timestamp;
+
 
 public class PlayerDeath {
 
@@ -13,6 +15,7 @@ public class PlayerDeath {
     private Location[] lastLocations;
     private ItemStack[] lostItems;
     private ItemStack[] lostArmor;
+    private Timestamp deathTime;
 
     public String getUuid() {
         return uuid;
@@ -69,4 +72,13 @@ public class PlayerDeath {
     public void setLostArmor(ItemStack[] lostArmor) {
         this.lostArmor = lostArmor;
     }
+
+    public Timestamp getDeathTime() {
+        return deathTime;
+    }
+
+    public void setDeathTime(Timestamp deathTime) {
+        this.deathTime = deathTime;
+    }
+
 }

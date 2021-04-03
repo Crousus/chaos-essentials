@@ -2,6 +2,7 @@ package de.chaosolymp.chaosessentials.tokens;
 
 import com.fasterxml.uuid.Generators;
 import de.chaosolymp.chaosessentials.ChaosEssentials;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,6 +21,8 @@ public class TagEditor {
     }
 
     public String getTag() {
+        if (item == null || item.getType() == Material.AIR)
+            return null;
         NamespacedKey key = new NamespacedKey(ChaosEssentials.getPlugin(), "id");
         ItemMeta itemMeta = item.getItemMeta();
         PersistentDataContainer container = itemMeta.getPersistentDataContainer();
@@ -32,6 +35,8 @@ public class TagEditor {
     }
 
     public String setTag() {
+        if (item == null || item.getType() == Material.AIR)
+            return null;
         NamespacedKey key = new NamespacedKey(ChaosEssentials.getPlugin(), "id");
         ItemMeta itemMeta = item.getItemMeta();
         UUID uuid = Generators.timeBasedGenerator().generate();

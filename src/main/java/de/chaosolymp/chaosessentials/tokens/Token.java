@@ -66,7 +66,7 @@ public class Token {
         return validUntil;
     }
 
-    public Date getValidAsDate(){
+    public Date getValidAsDate() {
         return Date.valueOf(validUntil);
     }
 

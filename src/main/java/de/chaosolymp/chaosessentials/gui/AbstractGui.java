@@ -56,7 +56,6 @@ public abstract class AbstractGui implements Listener {
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
         if (e.getInventory() != inv) return;
-
         e.setCancelled(true);
 
         final ItemStack clickedItem = e.getCurrentItem();
@@ -71,6 +70,7 @@ public abstract class AbstractGui implements Listener {
     }
 
     public void passInventoryClick(InventoryClickEvent e) {
+
     }
 
     @EventHandler
@@ -78,5 +78,9 @@ public abstract class AbstractGui implements Listener {
         if (e.getInventory() == inv) {
             e.setCancelled(true);
         }
+    }
+
+    public Inventory getInv() {
+        return inv;
     }
 }

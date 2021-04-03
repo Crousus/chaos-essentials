@@ -280,24 +280,45 @@ public class DatabaseController {
     }
 
     public boolean checkValidy(Token token){
-        String sql = "SELECT user_id, time FROM " + prefix + "devaluations WHERE token_id = ?";
+        String sql = "SELECT pl.uuid, deval.time FROM " + prefix + "devaluations AS deval, "+ prefix +"players AS pl " +
+                "WHERE token_id = (SELECT token_id FROM " + prefix + "tokens WHERE token_uuid = ?) AND pl.player_id = deval.user_id";
         Connection connection = DatabaseProvider.getConnection(plugin);
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1,token.getUuid());
             ResultSet result = stmt.executeQuery();
             if(result.next()){
-                token.setPlayer(result.getString(1));
+                token.setRedeemUuid(result.getString(1));
                 token.setRedeem(result.getTimestamp(2));
+                connection.close();
                 return true;
             }
-            else
+            else {
+                connection.close();
                 return false;
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void devalidateToken(Token token) {
+        try {
+            String sql = "INSERT INTO " + prefix + "devaluations (`devaluation_id`, `token_id`, `user_id`, `time`) VALUES " +
+                    "(NULL, (SELECT token_id FROM " + prefix + "tokens WHERE token_uuid = ?), (SELECT player_id FROM " + prefix + "players WHERE uuid = ?), CURRENT_TIMESTAMP);";
+            System.out.println(sql);
+            Connection connection = DatabaseProvider.getConnection(plugin);
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, token.getUuid());
+            stmt.setString(2, token.getPlayer());
+            stmt.executeUpdate();
+            connection.close();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
     }
 
 }

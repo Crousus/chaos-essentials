@@ -28,10 +28,10 @@ public class TokenCreator {
         return null;
     }
 
-    public static boolean isValid(Token token){
-        if(token !=null) {
-            if(token.getRedeem() == null){
-                return true;
+    public static boolean isValid(Token token) {
+        if (token != null) {
+            if (token.getRedeem() == null) {
+                return !token.getValidUntil().isBefore(LocalDate.now());
             }
         }
         return false;
@@ -42,13 +42,12 @@ public class TokenCreator {
         return isValid(getToken(item));
     }
 
-    public static Token getToken(ItemStack item){
-        if(item.getType() != Material.AIR){
+    public static Token getToken(ItemStack item) {
+        if (item.getType() != Material.AIR) {
             DatabaseController db = new DatabaseController();
             TagEditor editor = new TagEditor(item);
             return db.getToken(editor.getTag());
-        }
-        else
+        } else
             return null;
 
     }
