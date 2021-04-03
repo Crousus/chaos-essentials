@@ -185,12 +185,47 @@ afk_location:
   z: 151
 
 #############################################
+##############    Tokens    #################
+#############################################
+
+token:
+  is-valid: "&8[&e&l!&8] &6&lToken &8» &aDieser Token ist gültig ✔"
+  is-invalid: "&8[&e&l!&8] &6&lToken &8» &cDieser Token ist ungültig ✖"
+  used-date: "&8[&e&l!&8] &6&lToken &8» &cVerwendet am %date%"
+  used-player: "&8[&e&l!&8] &6&lToken &8» &cVerwendet von: &%player%"
+  uuid: "&8[&e&l!&8] &6&lToken &8» &7Dieser Token hat die UUID: &a%uuid%!"
+  command: "&8[&e&l!&8] &6&lToken &8» &7Command auf dem Token: &a%cmd%"
+  multi-use: "&8[&e&l!&8] &6&lToken &8» &7Mehrfachnutzung erlaubt: &a%use%"
+  valid-until: "&8[&e&l!&8] &6&lToken &8» &7Gültig bis zum &a%date%"
+  not-token: "&8[&e&l!&8] &6&lToken &8» &cDies ist kein Token! ✖"
+  cloned: "&8[&e&l!&8] &6&lToken &8» &aToken wurde geklont ✔"
+  redeemed: "&8[&e&l!&8] &6&lToken &8» &aToken wurde eingelöst ✔"
+  no-preset: "&8[&e&l!&8] &6&lToken &8» &cKein Token preset verfügbar ✖"
+  preset-usage: "&8[&e&l!&8] &6&lToken &8» &cVerwendung: /token preset <name> <valid-days>"
+  give-usage: "&8[&e&l!&8] &6&lToken &8» &cVerwendung: /token give <spieler> <preset>"
+
+
+#############################################
 ##############    Deaths    #################
 #############################################
 
 no_death: '&8[&e&l!&8] &6&lServer &8» &cKein Tod zu diesem Spieler gefunden'
 
-deaths_usage: '&8[&e&l!&8] &6&lServer &8» &cVerwendung: /deaths <typ> <Spieler>'
+deaths_usage: '&8[&e&l!&8] &6&lServer &8» &cVerwendung: /deaths <Spieler>'
+
+deaths-save-amount: 5
+
+deaths-gui:
+  overview-name: '&cLetzte Tode von &4%player%'
+  overview-item:
+    name: '&eTod um &c%time%'
+    lore:
+      - '&aWelt: &b%world%'
+      - '&aLevel: &b%lvl%'
+      - '&aGrund: &b%msg%'
+  inv-item: '&cInventar vor dem Tod'
+  armor-item: '&cRüstung vor dem Tod'
+  pos-item: '&aPostition %index%'
 
 #############################################
 ###########    Miscellaneous    #############
@@ -205,6 +240,27 @@ max_fly: 900
 fly_decrease: 5
 
 fly_increase: 1
+
+rolls: '&8[&e&l!&8] &6&lServer &8» &7%player% würfelt %roll% (%total%)!'
+
+inv-full: '&8[&e&l!&8] &6&lServer &8» &cDein Inventar ist voll! Das Item wurde gedroppt.'
+
+mcmmo-reward-lvl: 50
+
+mcmmo-reward-cmd: "token give %player% test"
+
+mcmmo-reward-msg: "&8[&e&l!&8] &6&lMcMMO &8» &aDu hast eine McMMO Box erhalten!"
+
+soulbound-alert: "&8[&e&l!&8] &6&lServer &8» &cAchtung dies ist ein Account gebundenes Item"
+
+soulbound-notice: "&8[&e&l!&8] &6&lServer &8» &cDieser Gegenstand ist accountgebunden!"
+
+lootchest: "&8» &9&lCHAOSOLYMP LOOTBOX"
+
+daily:
+  enabled: false
+  time: 10
+  command: 'token give %player% dailybox'
 
 
 

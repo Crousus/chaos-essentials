@@ -1,12 +1,9 @@
 package de.chaosolymp.chaosessentials;
 
 import de.chaosolymp.chaosessentials.command.*;
-import de.chaosolymp.chaosessentials.config.BuyConfig;
-import de.chaosolymp.chaosessentials.config.QuestConfig;
-import de.chaosolymp.chaosessentials.config.RandomTpConfig;
-import de.chaosolymp.chaosessentials.config.VariableConfig;
+import de.chaosolymp.chaosessentials.config.*;
+import de.chaosolymp.chaosessentials.cosmetics.TestCosmetic;
 import de.chaosolymp.chaosessentials.listener.*;
-import de.chaosolymp.chaosessentials.tabcomplete.DeathsTabCompleter;
 import de.chaosolymp.chaosessentials.tabcomplete.VariableTabCompleter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -19,22 +16,32 @@ public class ChaosEssentials extends JavaPlugin {
     private Economy econ;
     private HarvestListener harvestListener;
 
+    @Override
     public void onEnable() {
         plugin = this;
 
-        BuyConfig.setup();
-        BuyConfig.get().options().copyDefaults(true);
+        if (BuyConfig.buildConfig())
+            BuyConfig.get().options().copyDefaults(true);
         BuyConfig.save();
-        BuyConfig.reload();
 
         RandomTpConfig.setup();
         RandomTpConfig.get().options().copyDefaults(true);
         RandomTpConfig.save();
 
         VariableConfig.setup();
+        VariableConfig.save();
 
         QuestConfig.setup();
         QuestConfig.save();
+
+        LootConfig.setup();
+        LootConfig.save();
+
+        TokenPresetConfig.setup();
+        TokenPresetConfig.get();
+
+        ShopConfig.setup();
+        ShopConfig.get();
 
         this.saveDefaultConfig();
 
@@ -65,6 +72,16 @@ public class ChaosEssentials extends JavaPlugin {
         else
             this.getLogger().info("[ChaosEssentials] ARM not found");
 
+        if(Bukkit.getPluginManager().getPlugin("McMMO") != null)
+            Bukkit.getPluginManager().registerEvents(new McmmoListener(),this);
+        else
+            log("McMMO bot found");
+
+        if(Bukkit.getPluginManager().getPlugin("Shopkeepers") != null)
+            Bukkit.getPluginManager().registerEvents(new ShopkeeperListener(),this);
+        else
+            log("Shopkeepers not found");
+
         getCommand("hat").setExecutor(new HatCommand());
         getCommand("rest").setExecutor(new RestCommand());
         getCommand("launch").setExecutor(new LaunchCommand());
@@ -72,10 +89,15 @@ public class ChaosEssentials extends JavaPlugin {
         getCommand("average").setExecutor(new AverageCommand());
         getCommand("crea").setExecutor(new GamemodeCommand());
         getCommand("xpcloud").setExecutor(new XpCloudCommand());
+        if(Bukkit.getPluginManager().getPlugin("Craftbook") != null)
+            getCommand("var").setExecutor(new VariableCommand());
 
-        getCommand("token").setExecutor(new CreateTokenCommand());
+        getCommand("token").setExecutor(new TokenCommand());
         getCommand("ctp").setExecutor(new CTeleportCommand());
-
+        getCommand("lootchest").setExecutor(new LootChestCommand());
+        getCommand("soulbind").setExecutor(new SoulboundCommand());
+        getCommand("roll").setExecutor(new RollCommand());
+        getCommand("specialize").setExecutor(new SpecializeItemCommand());
 
         PipeSignCommand pipe = new PipeSignCommand();
         harvestListener = new HarvestListener();
@@ -88,29 +110,28 @@ public class ChaosEssentials extends JavaPlugin {
         else
             this.getLogger().info("[ChaosEssentials] MasuiteWarps not found");
 
-        if(Bukkit.getPluginManager().getPlugin("CraftBook5") != null){
-            getCommand("var").setExecutor(new VariableCommand());
-            getCommand("var").setTabCompleter(new VariableTabCompleter());
-        }
-
         Bukkit.getPluginManager().registerEvents(new ExcavatorListener(), this);
         Bukkit.getPluginManager().registerEvents(new MultiToolListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinAndLeaveListener(), this);
         Bukkit.getPluginManager().registerEvents(new RandomTeleportListener(), this);
         Bukkit.getPluginManager().registerEvents(new XpSpammerListener(), this);
-        //Bukkit.getPluginManager().registerEvents(new TokenListener(), this);
+        Bukkit.getPluginManager().registerEvents(new TokenListener(), this);
         Bukkit.getPluginManager().registerEvents(pipe, this);
         Bukkit.getPluginManager().registerEvents(harvestListener, this);
-        //Bukkit.getPluginManager().registerEvents(new CollectListener(), this);
 
-        getCommand("deaths").setTabCompleter(new DeathsTabCompleter());
+        getCommand("var").setTabCompleter(new VariableTabCompleter());
         getCommand("creload").setExecutor(new ReloadCommand(harvestListener));
 
         PlayerListener playerListener = new PlayerListener();
         Bukkit.getPluginManager().registerEvents(playerListener, this);
         getCommand("deaths").setExecutor(new DeathsCommand(playerListener));
+
+        if(Bukkit.getPluginManager().getPlugin("ProCosmetics") != null)
+            TestCosmetic.register();
+
     }
 
+    @Override
     public void onDisable(){
         Bukkit.getScheduler().cancelTasks(plugin);
         harvestListener.replantAll();

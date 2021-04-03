@@ -27,6 +27,5 @@ public class CommandEventListener implements Listener {
                 }
             }
         }.runTaskAsynchronously(ChaosEssentials.getPlugin());
-
     }
 }

@@ -40,16 +40,18 @@ public class BuyCommand extends AbstractPurchasable implements CommandExecutor {
 
     @Override
     public void passInventoryClick(InventoryClickEvent e) {
-        OfflinePlayer player = (OfflinePlayer) e.getWhoClicked();
-        e.getWhoClicked().closeInventory();
+        if (e.getClickedInventory() == getInv()) {
+            OfflinePlayer player = (OfflinePlayer) e.getWhoClicked();
+            e.getWhoClicked().closeInventory();
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                processPurchase((Player) player, null, String.valueOf(getItems().get(e.getSlot())));
-            }
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    processPurchase((Player) player, null, String.valueOf(getItems().get(e.getSlot())));
+                }
 
-        }.runTaskAsynchronously(ChaosEssentials.getPlugin());
+            }.runTaskAsynchronously(ChaosEssentials.getPlugin());
+        }
 
     }
 

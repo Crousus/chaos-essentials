@@ -18,7 +18,7 @@ public class RestCommand implements CommandExecutor {
     private final HashSet<Player> sleeping;
 
     public RestCommand() {
-        sleeping = new HashSet<Player>();
+        sleeping = new HashSet<>();
     }
 
     @Override

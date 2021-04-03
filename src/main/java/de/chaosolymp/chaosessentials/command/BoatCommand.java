@@ -1,6 +1,8 @@
 package de.chaosolymp.chaosessentials.command;
 
+import de.chaosolymp.chaosessentials.events.CommandEvent;
 import de.chaosolymp.chaosessentials.util.MessageConverter;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,8 +18,10 @@ public class BoatCommand implements CommandExecutor {
             player = (Player) sender;
 
             if (player.hasPermission("ce.use.boat") || player.hasPermission("ce.boat")) {
-                player.getWorld().spawnEntity(player.getLocation(), EntityType.BOAT).addPassenger(player);
+                player.getWorld().spawnEntity(player.getLocation().add(0, 0.5, 0), EntityType.BOAT).addPassenger(player);
                 MessageConverter.sendConfMessage(player, "boatspawn");
+                CommandEvent event = new CommandEvent(player, "boat");
+                Bukkit.getPluginManager().callEvent(event);
             } else {
                 if (player.hasPermission("ce.buy"))
                     MessageConverter.sendPurchaseable(player);

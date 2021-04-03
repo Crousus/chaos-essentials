@@ -6,7 +6,7 @@ description: Essentials Plugin for ChaosOlymp
 website: https://chaosolymp.de
 prefix: ChaosEssentials
 api-version: 1.16
-softdepend: [ AdvancedRegionMarket, LuckPerms, Vault, ChestShop, MaSuiteWarps, WorldGuard, LWC, BeautyQuests ]
+softdepend: [ AdvancedRegionMarket, LuckPerms, Vault, ChestShop, MaSuiteWarps, WorldGuard, LWC, BeautyQuests, ProCosmetics, McMMO]
 
 commands:
   buy:
@@ -62,3 +62,15 @@ commands:
   creload:
     permission: ce.reload
     description: Laed Plugin Configs neu
+  lootchest:
+    permission: ce.lootchest
+    description: Oeffnet eine Lootchest
+  soulbind:
+    description: Bindet ein Item an deine Seele
+    permission: ce.soulbind
+  roll:
+    description: Rollt eine Zahl
+    permission: ce.roll
+  specialize:
+    description: Spezialisiert ein Item
+    permission: ce.specialize

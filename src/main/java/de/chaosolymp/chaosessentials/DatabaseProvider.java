@@ -22,6 +22,7 @@ public final class DatabaseProvider {
         this.config.addDataSourceProperty("cachePrepStmts", "true");
         this.config.addDataSourceProperty("prepStmtCacheSize", "250");
         this.config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        this.config.setMaximumPoolSize(100);
         this.dataSource = new HikariDataSource(this.config);
     }
 
