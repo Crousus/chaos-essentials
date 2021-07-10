@@ -5,10 +5,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import de.chaosolymp.chaosessentials.ChaosEssentials;
 import de.chaosolymp.chaosessentials.command.SoulboundCommand;
 import de.chaosolymp.chaosessentials.config.DailyPlayersConfig;
-import de.chaosolymp.chaosessentials.util.EditPermission;
-import de.chaosolymp.chaosessentials.util.MessageConverter;
-import de.chaosolymp.chaosessentials.util.PlayerDeath;
-import de.chaosolymp.chaosessentials.util.RegionCheck;
+import de.chaosolymp.chaosessentials.util.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -250,6 +247,27 @@ public class PlayerListener implements Listener {
                 e.getPlayer().getInventory().setHelmet(item);
                 e.getPlayer().getInventory().setItemInMainHand(hat);
             }
+        }
+    }
+
+    @EventHandler
+    public void onBackPackClick(PlayerInteractEvent e){
+        NamespacedKey key = new NamespacedKey(ChaosEssentials.getPlugin(),"backpack");
+        ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
+        if(item.getItemMeta().getPersistentDataContainer().get(key,PersistentDataType.STRING) != null){
+            new BackPack(item, e.getPlayer());
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onFlyStaffClick(PlayerInteractEvent e){
+        NamespacedKey key = new NamespacedKey(ChaosEssentials.getPlugin(),"flystaff");
+        ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
+        if(item.getItemMeta().getPersistentDataContainer().get(key,PersistentDataType.STRING) != null){
+            e.getPlayer().setVelocity(e.getPlayer().getLocation().getDirection().multiply(10));
+            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 2,1f);
+            e.setCancelled(true);
         }
     }
 

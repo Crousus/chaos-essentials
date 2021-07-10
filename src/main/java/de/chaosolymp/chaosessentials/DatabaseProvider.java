@@ -38,11 +38,7 @@ public final class DatabaseProvider {
     static Connection getConnection(JavaPlugin plugin) {
         if (instance == null)
             instance = new DatabaseProvider(plugin.getConfig().getString("jdbc") + plugin.getConfig().getString("database"), plugin.getConfig().getString("username"), plugin.getConfig().getString("password"));
-        try {
-            connection = instance.dataSource.getConnection();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        connection = instance.dataSource.getConnection();
         return connection;
     }
 

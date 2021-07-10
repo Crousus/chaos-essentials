@@ -107,24 +107,23 @@ public class HarvestListener implements Listener {
                         if (rg.getId().equals(setting.getRegion())) {
                             if (setting.getType() == 3 || setting.getType() == 4) {
                                 PlayerAccount account = PlayersManager.getPlayerAccount(player);
-                                if (account == null)
-                                    ChaosEssentials.log("Accout is null");
-                                Collection<PlayerQuestDatas> quests = account.getQuestsDatas();
-
-                                for (PlayerQuestDatas data : quests) {
-                                    Quest quest = data.getQuest();
-
-                                    if (quest.getBranchesManager().getPlayerBranch(account) != null) {
-                                        AbstractStage stage = quest.getBranchesManager().getPlayerBranch(account).getRegularStage(data.getStage());
-                                        if (stage.getID() == setting.getStage() && quest.getName().equals(setting.getQuest())) {
-                                            if (setting.getType() == 4) {
-                                                e.getItem().remove();
-                                                e.setCancelled(true);
-                                                e.getItem().setPickupDelay(100);
+                                List<Quest> quests = QuestsAPI.getQuestsStarteds(account);
+                                for (Quest quest : quests) {
+                                    try {
+                                        if (quest.getBranchesManager().getPlayerBranch(account) != null) {
+                                            AbstractStage stage = quest.getBranchesManager().getPlayerBranch(account).getRegularStage(account.getQuestDatas(quest).getStage());
+                                            if (stage.getID() == setting.getStage() && quest.getName().equals(setting.getQuest())) {
+                                                if (setting.getType() == 4) {
+                                                    e.getItem().remove();
+                                                    e.setCancelled(true);
+                                                    e.getItem().setPickupDelay(100);
+                                                }
+                                                player.playSound(player.getLocation(), setting.getSound(), 2f, 2f);
+                                                break RegionFetch;
                                             }
-                                            player.playSound(player.getLocation(), setting.getSound(), 2f, 2f);
-                                            break RegionFetch;
                                         }
+                                    } catch (ArrayIndexOutOfBoundsException ex){
+
                                     }
                                 }
                                 e.setCancelled(true);
@@ -153,18 +152,21 @@ public class HarvestListener implements Listener {
                 if (rg.getId().equals(setting.getRegion())) {
                     if (setting.getType() == 5) {
                         PlayerAccount account = PlayersManager.getPlayerAccount(player);
-                        Collection<PlayerQuestDatas> quests = account.getQuestsDatas();
-                        for (PlayerQuestDatas data : quests) {
-                            Quest quest = data.getQuest();
-                            if (quest.getBranchesManager().getPlayerBranch(account) != null) {
-                                AbstractStage stage = quest.getBranchesManager().getPlayerBranch(account).getRegularStage(data.getStage());
-                                if (stage.getID() == setting.getStage() && quest.getName().equals(setting.getQuest())) {
-                                    double rand = Math.random();
-                                    if (rand < setting.getReplant_time() / 100.0) {
-                                        Item item = (Item) e.getCaught();
-                                        item.setItemStack(setting.getItem());
+                        List<Quest> quests = QuestsAPI.getQuestsStarteds(account);
+                        for (Quest quest : quests) {
+                            try {
+                                if (quest.getBranchesManager().getPlayerBranch(account) != null) {
+                                    AbstractStage stage = quest.getBranchesManager().getPlayerBranch(account).getRegularStage(account.getQuestDatas(quest).getStage());
+                                    if (stage.getID() == setting.getStage() && quest.getName().equals(setting.getQuest())) {
+                                        double rand = Math.random();
+                                        if (rand < setting.getReplant_time() / 100.0) {
+                                            Item item = (Item) e.getCaught();
+                                            item.setItemStack(setting.getItem());
+                                        }
                                     }
                                 }
+                            } catch (ArrayIndexOutOfBoundsException ex) {
+
                             }
                         }
                     }

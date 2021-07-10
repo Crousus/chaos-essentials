@@ -61,14 +61,14 @@ public class TokenCommand implements CommandExecutor, TabCompleter {
                 if (subcommands.containsKey(args[0]))
                     subcommands.get(args[0]).executeCommand(player, args);
                 else
-                    MessageConverter.sendMessage(player, "&cDieser Subcommand existiert nicht");
+                    MessageConverter.sendConfMessage(sender, "wrong-subcmd");
             }
         } else {
             if (args.length > 0) {
                 if (subcommands.containsKey(args[0]))
                     subcommands.get(args[0]).executeCommand(sender, args);
                 else
-                    MessageConverter.sendMessage(sender, "&cDieser Subcommand existiert nicht");
+                    MessageConverter.sendConfMessage(sender, "wrong-subcmd");
             }
         }
 
@@ -299,7 +299,7 @@ public class TokenCommand implements CommandExecutor, TabCompleter {
                                     if(TokenPresetConfig.get().get(args[1]) == null){
                                         TokenPresetConfig.get().set(args[1]+".item",item.serialize());
                                         TokenPresetConfig.get().set(args[1]+".valid-days", Integer.parseInt(args[2]));
-                                        TokenPresetConfig.get().set(args[1]+".souldbound", SoulboundCommand.isSoulBound(item));
+                                        TokenPresetConfig.get().set(args[1]+".soulbound", SoulboundCommand.isSoulBound(item));
                                         TokenPresetConfig.get().set(args[1]+".command", token.getCommand());
                                         TokenPresetConfig.get().set(args[1]+".is-multiuse", token.isMultiUse());
                                         TokenPresetConfig.save();
@@ -344,13 +344,19 @@ public class TokenCommand implements CommandExecutor, TabCompleter {
                         if(target !=null) {
                             ItemStack item = ItemStack.deserialize(TokenPresetConfig.get().getConfigurationSection(args[2] + ".item").getValues(true));
                             if (item != null) {
-                                TokenCreator.tokenize(item, target,
-                                        TokenPresetConfig.get().getString(args[2] + ".command"),
-                                        TokenPresetConfig.get().getBoolean(args[2] + ".is-multiuse"),
-                                        LocalDate.ofEpochDay(LocalDate.now().toEpochDay() + TokenPresetConfig.get().getInt(args[2] + ".valid-days")));
+                                if(args.length < 4) {
+                                    TokenCreator.tokenize(item, target,
+                                            TokenPresetConfig.get().getString(args[2] + ".command"),
+                                            TokenPresetConfig.get().getBoolean(args[2] + ".is-multiuse"),
+                                            LocalDate.ofEpochDay(LocalDate.now().toEpochDay() + TokenPresetConfig.get().getInt(args[2] + ".valid-days")));
+                                }
 
-                                if(TokenPresetConfig.get().getBoolean(args[2] + ".soulbound"))
+                                System.out.println("sb: "+TokenPresetConfig.get().getBoolean(args[2] + ".soulbound"));
+
+                                if(TokenPresetConfig.get().getBoolean(args[2] + ".soulbound")) {
                                     SoulboundCommand.bindToSoul(item,target.getUniqueId().toString());
+                                    System.out.println("overwriting"+target.getUniqueId().toString());
+                                }
                                 ItemGiver.giveItemSave(target, item);
                             } else {
                                 MessageConverter.sendConfMessage(sender, "token.no-preset");

@@ -39,7 +39,7 @@ public class SoulboundCommand implements CommandExecutor {
     }
 
     public static void bindToSoul(ItemStack item, String uuid){
-        if(item != null && !item.getType().isAir() && !isSoulBound(item)){
+        if(item != null && !item.getType().isAir()){
             ItemMeta meta = item.getItemMeta();
             meta.getPersistentDataContainer().set(key, PersistentDataType.STRING,uuid);
             item.setItemMeta(meta);

@@ -257,6 +257,10 @@ soulbound-notice: "&8[&e&l!&8] &6&lServer &8» &cDieser Gegenstand ist accountge
 
 lootchest: "&8» &9&lCHAOSOLYMP LOOTBOX"
 
+titan-item: "&8[&e&l!&8] &6&lServer &8» &7%player% hat ein &6&lTITAN &7Item gezogen!"
+
+wrong-subcmd: "&8[&e&l!&8] &6&lServer &8» &cDieser Subcommand existiert nicht"
+
 daily:
   enabled: false
   time: 10

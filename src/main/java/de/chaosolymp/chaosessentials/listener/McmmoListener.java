@@ -11,10 +11,17 @@ public class McmmoListener implements Listener {
 
     @EventHandler
     public void onMcmmoLevelup(McMMOPlayerLevelUpEvent e){
-        if(e.getSkillLevel() % ChaosEssentials.getPlugin().getConfig().getInt("mcmmo-reward-lvl") == 0) {
+        int level = e.getSkillLevel();
+        int rewardLevel = ChaosEssentials.getPlugin().getConfig().getInt("mcmmo-reward-lvl");
+        if(level % rewardLevel == 0) {
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
                     ChaosEssentials.getPlugin().getConfig().getString("mcmmo-reward-cmd").replaceFirst("%player%", e.getPlayer().getName()));
             MessageConverter.sendConfMessage(e.getPlayer(),"mcmmo-reward-msg");
+        }
+
+        if(level % rewardLevel*2 == 0){
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                    "token give "+e.getPlayer().getName()+" titanbox");
         }
     }
 }

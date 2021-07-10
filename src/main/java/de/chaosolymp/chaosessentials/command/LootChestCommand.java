@@ -165,7 +165,7 @@ public class LootChestCommand implements CommandExecutor, Listener {
                 public void run() {
                     int rolls = 0;
                     int delay = 50;
-                    ItemStack[] item;
+                    ItemStack[] item = new ItemStack[0];
                     for(int i = 0; i < 9; i++){
                         item = getRandomItems(chest,false);
                         setItemToGui(item[1],i+9);
@@ -207,40 +207,35 @@ public class LootChestCommand implements CommandExecutor, Listener {
                         setItemToGui(item[1],17);
                         setItemToGui(item[0],26);
                         setItemToGui(item[1].clone(),35);
-                        Bukkit.getScheduler().runTask(ChaosEssentials.getPlugin(),new SoundTask(player, Sound.ENTITY_CHICKEN_EGG));
+                        Bukkit.getScheduler().runTask(ChaosEssentials.getPlugin(),
+                                () -> player.playSound(player.getLocation(),Sound.ENTITY_CHICKEN_EGG,2f,0.5f));
 
                         delay = (int) (delay < 350 ? delay * 1.07 : delay * 1.2);
                         rolls++;
 
                     }
                     GuiManager.getInstance().unregisterOpenGui(player.getUniqueId().toString());
-                    HashSet<Integer> enabledSlot = new HashSet<>();
-                    enabledSlot.add(22);
-                    GuiManager.getInstance().registerGui(getInv(),enabledSlot);
+                    HashSet<Integer> enabledSlots = new HashSet<>();
+                    enabledSlots.add(22);
+                    GuiManager.getInstance().registerGui(getInv(),enabledSlots);
+                    GuiManager.getInstance().registerDropGui(getInv(),enabledSlots);
                     try {
                         Thread.sleep(300);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    Bukkit.getScheduler().runTask(ChaosEssentials.getPlugin(),new SoundTask(player, Sound.ENTITY_PLAYER_LEVELUP));
+                    if(getInv().getItem(13).getType() == Material.YELLOW_STAINED_GLASS_PANE) {
+                        Bukkit.getScheduler().runTask(ChaosEssentials.getPlugin(),
+                                () -> player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 2f, 0.5f));
+                        Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&',
+                                ChaosEssentials.getPlugin().getConfig().getString("titan-item").replaceFirst("%player%",player.getName())));
+                    }
+                    else
+                        Bukkit.getScheduler().runTask(ChaosEssentials.getPlugin(),
+                                () -> player.playSound(player.getLocation(),Sound.ENTITY_PLAYER_LEVELUP,2f,0.5f));
+
                 }
             }.runTaskAsynchronously(ChaosEssentials.getPlugin());
-        }
-    }
-
-    class SoundTask implements Runnable {
-
-        Player player;
-        Sound sound;
-
-        public SoundTask (Player player, Sound sound){
-            this.player = player;
-            this.sound = sound;
-        }
-
-        @Override
-        public void run() {
-            player.playSound(player.getLocation(),sound,2f,0.5f);
         }
     }
 }

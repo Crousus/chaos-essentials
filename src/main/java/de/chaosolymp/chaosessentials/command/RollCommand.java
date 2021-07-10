@@ -33,7 +33,7 @@ public class RollCommand implements CommandExecutor {
             message = ChatColor.translateAlternateColorCodes('&',message);
 
             for(Player target : Bukkit.getOnlinePlayers()){
-                if(target.getLocation().distance(player.getLocation()) < 50){
+                if(target.getLocation().getWorld().getName().equals(target.getLocation().getWorld().getName()) && target.getLocation().distance(player.getLocation()) < 50){
                     target.sendMessage(message);
                 }
             }

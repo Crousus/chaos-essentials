@@ -1,10 +1,7 @@
 package de.chaosolymp.chaosessentials.command;
 
 import de.chaosolymp.chaosessentials.ChaosEssentials;
-import de.chaosolymp.chaosessentials.config.BuyConfig;
-import de.chaosolymp.chaosessentials.config.QuestConfig;
-import de.chaosolymp.chaosessentials.config.RandomTpConfig;
-import de.chaosolymp.chaosessentials.config.VariableConfig;
+import de.chaosolymp.chaosessentials.config.*;
 import de.chaosolymp.chaosessentials.listener.HarvestListener;
 import de.chaosolymp.chaosessentials.util.MessageConverter;
 import org.bukkit.command.Command;
@@ -37,6 +34,8 @@ public class ReloadCommand implements CommandExecutor {
                         VariableConfig.setup();
                         ChaosEssentials.getPlugin().saveConfig();
                         harvestListener.cacheSettings();
+                        TokenPresetConfig.reload();
+                        ShopConfig.reload();
                         MessageConverter.sendMessage(player,"&aAll plugin configs reloaded!");
                     }
                 }.runTaskAsynchronously(ChaosEssentials.getPlugin());
