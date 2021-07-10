@@ -254,6 +254,8 @@ public class PlayerListener implements Listener {
     public void onBackPackClick(PlayerInteractEvent e){
         NamespacedKey key = new NamespacedKey(ChaosEssentials.getPlugin(),"backpack");
         ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
+        if(item.getItemMeta() == null)
+            return;
         if(item.getItemMeta().getPersistentDataContainer().get(key,PersistentDataType.STRING) != null){
             new BackPack(item, e.getPlayer());
             e.setCancelled(true);

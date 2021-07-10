@@ -12,24 +12,25 @@ import java.util.List;
 
 public class VariableTabCompleter implements TabCompleter {
 
-    private final List<String> completions = new ArrayList<>();
+    private List<String> completions;
     private final List<String> COMMANDS = new ArrayList<>();
     private final List<String> second = new ArrayList<>();
 
     public VariableTabCompleter() {
         for (String s : VariableCache.getInstance().getVarMap().keySet()) {
-            completions.add(s);
+            COMMANDS.add(s);
         }
         COMMANDS.add("var");
         second.add("bl");
-        completions.add("i");
-        completions.add("info");
-        completions.add("clear");
+        COMMANDS.add("i");
+        COMMANDS.add("info");
+        COMMANDS.add("clear");
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
+            completions = new ArrayList<>();
             StringUtil.copyPartialMatches(args[0], COMMANDS, completions);
             Collections.sort(completions);
             return completions;

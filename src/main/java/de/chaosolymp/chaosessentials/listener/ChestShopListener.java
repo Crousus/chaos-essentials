@@ -35,7 +35,6 @@ public class ChestShopListener implements Listener {
                     db.addTransaction(p);
                 }
             }.runTaskAsynchronously(ChaosEssentials.getPlugin());
-
         }
     }
 }

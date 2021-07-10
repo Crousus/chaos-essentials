@@ -59,6 +59,8 @@ public class LootChestCommand implements CommandExecutor, Listener {
             if(args.length > 0) {
                 if(commands.containsKey(args[0].toLowerCase()))
                     commands.get(args[0].toLowerCase()).executeCommand(sender,args);
+                else
+                    MessageConverter.sendConfMessage(sender,"wrong-subcmd");
             }
         }
         return false;
