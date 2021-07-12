@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import java.util.List;
+
 public class McmmoListener implements Listener {
 
     @EventHandler
@@ -14,12 +16,20 @@ public class McmmoListener implements Listener {
         int level = e.getSkillLevel();
         int rewardLevel = ChaosEssentials.getPlugin().getConfig().getInt("mcmmo-reward-lvl");
         if(level % rewardLevel == 0) {
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-                    ChaosEssentials.getPlugin().getConfig().getString("mcmmo-reward-cmd").replaceFirst("%player%", e.getPlayer().getName()));
+            List<String> cmds = ChaosEssentials.getPlugin().getConfig().getStringList("mcmmo-reward-cmd");
+            int delay = 1;
+            for(String cmd : cmds){
+                Bukkit.getScheduler().runTaskLater(ChaosEssentials.getPlugin(),() -> {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                            cmd.replaceFirst("%player%", e.getPlayer().getName()));
+                },delay*20);
+
+                delay++;
+            }
             MessageConverter.sendConfMessage(e.getPlayer(),"mcmmo-reward-msg");
         }
 
-        if(level % rewardLevel*2 == 0){
+        if(level % (rewardLevel*2) == 0){
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
                     "token give "+e.getPlayer().getName()+" titanbox");
         }

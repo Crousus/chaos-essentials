@@ -3,6 +3,7 @@ package de.chaosolymp.chaosessentials.listener;
 import com.Acrobot.ChestShop.ORMlite.stmt.query.In;
 import de.chaosolymp.chaosessentials.ChaosEssentials;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
@@ -71,7 +72,8 @@ public class GuiManager implements Listener {
         if (dropOnCloseGuis.containsKey(e.getInventory())) {
             Inventory inv = e.getInventory();
             for (int i : dropOnCloseGuis.get(inv)) {
-                e.getPlayer().getLocation().getWorld().dropItem(e.getPlayer().getLocation(), inv.getItem(i));
+                if(inv.getItem(i) != null && inv.getItem(i).getType() != Material.AIR)
+                    e.getPlayer().getLocation().getWorld().dropItem(e.getPlayer().getLocation(), inv.getItem(i));
             }
             dropOnCloseGuis.remove(inv);
         }

@@ -254,7 +254,7 @@ public class PlayerListener implements Listener {
     public void onBackPackClick(PlayerInteractEvent e){
         NamespacedKey key = new NamespacedKey(ChaosEssentials.getPlugin(),"backpack");
         ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
-        if(item.getItemMeta() == null)
+        if(item == null || item.getType() == Material.AIR || item.getItemMeta() == null)
             return;
         if(item.getItemMeta().getPersistentDataContainer().get(key,PersistentDataType.STRING) != null){
             new BackPack(item, e.getPlayer());
@@ -266,6 +266,8 @@ public class PlayerListener implements Listener {
     public void onFlyStaffClick(PlayerInteractEvent e){
         NamespacedKey key = new NamespacedKey(ChaosEssentials.getPlugin(),"flystaff");
         ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
+        if(item == null || item.getType() == Material.AIR || item.getItemMeta() == null)
+            return;
         if(item.getItemMeta().getPersistentDataContainer().get(key,PersistentDataType.STRING) != null){
             e.getPlayer().setVelocity(e.getPlayer().getLocation().getDirection().multiply(10));
             e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 2,1f);
@@ -323,9 +325,11 @@ public class PlayerListener implements Listener {
                     if (!player.hasPermission("essentials.fly") && !player.hasPermission("ce.nervedfly")) {
                         if (player.getAllowFlight() && player.getGameMode() == GameMode.SURVIVAL) {
                             if (!RegionCheck.hasFlag(player.getLocation(), "fly")) {
-                                player.setAllowFlight(false);
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 30 * 20, 100, false, false));
                                 MessageConverter.sendConfMessage(player, "fly_expired");
+                                Bukkit.getScheduler().runTaskLater(ChaosEssentials.getPlugin(), () -> {
+                                    player.setAllowFlight(false);
+                                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 30 * 20, 100, false, false));
+                                }, 5*20L);
                             }
                         }
                     }

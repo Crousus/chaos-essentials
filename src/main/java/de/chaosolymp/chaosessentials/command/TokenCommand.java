@@ -26,6 +26,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.StringUtil;
 import org.json.simple.parser.ParseException;
@@ -267,7 +268,6 @@ public class TokenCommand implements CommandExecutor, TabCompleter {
                                     ItemGiver.giveItemSave(player, newTokenItem);
                                 }
                             }
-
                         }
                     }.runTaskAsynchronously(ChaosEssentials.getPlugin());
                 }
@@ -304,6 +304,8 @@ public class TokenCommand implements CommandExecutor, TabCompleter {
                                         TokenPresetConfig.get().set(args[1]+".is-multiuse", token.isMultiUse());
                                         TokenPresetConfig.save();
                                         TokenPresetConfig.reload();
+
+                                        MessageConverter.sendMessage(player,"&aPreset "+ args[1] +" created!");
                                     }
                                 }
                             }
@@ -345,10 +347,18 @@ public class TokenCommand implements CommandExecutor, TabCompleter {
                             ItemStack item = ItemStack.deserialize(TokenPresetConfig.get().getConfigurationSection(args[2] + ".item").getValues(true));
                             if (item != null) {
                                 if(args.length < 4) {
+                                    LocalDate expiry = LocalDate.ofEpochDay(LocalDate.now().toEpochDay() + TokenPresetConfig.get().getInt(args[2] + ".valid-days"));
                                     TokenCreator.tokenize(item, target,
                                             TokenPresetConfig.get().getString(args[2] + ".command"),
-                                            TokenPresetConfig.get().getBoolean(args[2] + ".is-multiuse"),
-                                            LocalDate.ofEpochDay(LocalDate.now().toEpochDay() + TokenPresetConfig.get().getInt(args[2] + ".valid-days")));
+                                            TokenPresetConfig.get().getBoolean(args[2] + ".is-multiuse"),expiry);
+
+                                            List<String> lore = item.getItemMeta().getLore();
+                                            for(int i = 0; i < lore.size(); i++) {
+                                                lore.set(i,lore.get(i).replaceFirst("%date%", expiry.getDayOfMonth()+"."+expiry.getMonthValue()+"."+expiry.getYear()));
+                                            }
+                                            ItemMeta meta = item.getItemMeta();
+                                            meta.setLore(lore);
+                                            item.setItemMeta(meta);
                                 }
 
                                 System.out.println("sb: "+TokenPresetConfig.get().getBoolean(args[2] + ".soulbound"));
@@ -357,6 +367,7 @@ public class TokenCommand implements CommandExecutor, TabCompleter {
                                     SoulboundCommand.bindToSoul(item,target.getUniqueId().toString());
                                     System.out.println("overwriting"+target.getUniqueId().toString());
                                 }
+
                                 ItemGiver.giveItemSave(target, item);
                             } else {
                                 MessageConverter.sendConfMessage(sender, "token.no-preset");
